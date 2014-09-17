@@ -199,9 +199,9 @@ function( $scope )
 {
 	$scope.datepicker_open = false;
 
-	$scope.datepickerOpenClick = function($event) {
-		$event.preventDefault();
-		$event.stopPropagation();
+	$scope.datepickerOpenClick = function( event ) {
+		event.preventDefault();
+		event.stopPropagation();
 		$scope.datepicker_open = true;
 	};
 
@@ -301,7 +301,10 @@ function( $scope,   $routeParams,   $http,   $location,   $modal,   $q )
 		$location.url( '/write' + $location.url().substring($location.url().lastIndexOf('/')) );
 		};
 
-	$scope.saveClick = function() {
+	$scope.saveClick = function( event ) {
+
+		if( $scope.input_form.$pristine )
+			return;
 
 		var delete_location_url = ( event.altKey || event.shiftKey ? '' : $location.url() );
 		var col_obj, params_action = {};

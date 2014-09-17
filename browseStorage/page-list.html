@@ -10,8 +10,8 @@
 			</div>
 
 			<div class="col-sm-6 text-muted">
-				<p><small><kbd>Click / tap</kbd> a row to <span ng-if="table.can_edit==1">show the entry in more detail</span><span ng-if="table.can_edit&gt;=2">edit the entry</span>.
-				          <span ng-if="table.can_edit==1"><br />With a keyboard, you can also <kbd>alt + click</kbd> to immediately edit the entry.</span></small></p>
+				<p><small><no-kbd>Click/tap</no-kbd> a row to <span ng-if="table.can_edit==1">show the entry in more detail</span><span ng-if="table.can_edit&gt;=2">edit the entry</span>.
+				          <span ng-if="table.can_edit==1"><br />With a keyboard, you can also <no-kbd>alt+click</no-kbd> to immediately edit the entry.</span></small></p>
 			</div>
 			<div class="col-sm-3 text-right">
 				<form ng-if="table.rows.length > 10" class="form-inline" role="form">
@@ -52,7 +52,7 @@
 			<form class="form-horizontal" role="form">
 				<div class="form-group">
 					<div class="col-sm-12">
-					<button class="btn btn-default" onclick="window.history.back();" type="submit"
+					<button class="btn btn-default" type="submit" onclick="window.history.back();"
 						><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
 					<button ng-if="table.can_insert" class="btn btn-default" ng-click="addNewClick();"
 						><i class="glyphicon glyphicon-plus"></i> Add new</button>

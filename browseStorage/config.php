@@ -145,6 +145,31 @@ $browseStorage_group1 = "My table group 1";
 	),
 );
 
+// Reset the demo database every hour, on the hour (can be removed in production)
+// ============================================================================
+
+$browseStorage_demo = @\browseStorage\TableClass::$data_sources['sqlite_demos']['file'];
+if( is_string($browseStorage_demo) )
+	{
+	$browseStorage_demo_dir  = dirname ($browseStorage_demo) . PATH_SEPARATOR;
+	$browseStorage_demo_file = basename($browseStorage_demo);
+	$browseStorage_demo_ext  = strrchr ($browseStorage_demo_file, '.');
+	$browseStorage_demo_file = substr( $browseStorage_demo_file, 0, -strlen($browseStorage_demo_ext) );
+
+	$browseStorage_demo_original = $browseStorage_demo_dir . $browseStorage_demo_file . '-original' . $browseStorage_demo_ext;
+	$browseStorage_demo_copy     = $browseStorage_demo_dir . $browseStorage_demo_file . '-copy'     . $browseStorage_demo_ext;
+
+	if( file_exists($browseStorage_demo_original)                                 &&
+	    gmdate('YmdH',filemtime($browseStorage_demo_original)) != gmdate('YmdH')  &&
+	    !file_exists($browseStorage_demo_copy) )
+		{
+		touch ( $browseStorage_demo_original );
+		// "atomic" duplication:
+		copy  ( $browseStorage_demo_original, $browseStorage_demo_copy );
+		rename( $browseStorage_demo_copy,     $browseStorage_demo      );
+		}
+	}
+
 
 // ============================================================================
 // ####  Filter functions for the tables  #####################################

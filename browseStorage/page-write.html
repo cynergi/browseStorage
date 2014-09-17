@@ -12,7 +12,7 @@
 			<br />
 
 
-			<form name="input_form" class="form-horizontal" role="form" ng-submit="saveClick();">
+			<form name="input_form" class="form-horizontal" role="form" ng-submit="saveClick($event);">
 				<div class="form-group" ng-repeat="col in row.columns | add_show_property">
 					<label ng-if="col.control != 'checkbox'" for="input-{{$index}}" class="col-sm-3 control-label">{{col.name}}</label>
 					<div   ng-if="col.control == 'checkbox'" class="col-sm-3"></div>
@@ -114,9 +114,10 @@
 				<div class="form-group">
 					<br /><br />
 					<div class="col-sm-12">
-					<button class="btn btn-default" onclick="window.history.back();"
-						><i class="glyphicon glyphicon-chevron-left"></i> Cancel/Back</button>
-					<button class="btn btn-default"  type="submit" ng-disabled="input_form.$pristine"
+					<!-- the first button is actually an anchor so that it doesn't become the default for the "Enter" key! -->
+					<a class="btn btn-default" onclick="window.history.back();"
+						><i class="glyphicon glyphicon-chevron-left"></i> Cancel/Back</a>
+					<button class="btn btn-default" type="submit" ng-disabled="input_form.$pristine"
 						><i class="glyphicon glyphicon-save"></i> Save</button>
 					<button ng-if="!add_new  &&  row.can_delete" class="btn btn-default" ng-click="deleteClick($event);"
 						><i class="glyphicon glyphicon-remove"></i> Delete</button>

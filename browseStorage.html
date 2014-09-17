@@ -109,23 +109,19 @@
 	--></style>
 </head>
 <body>
-<header class="navbar navbar-default navbar-fixed-top">
-	<div class="navbar-inner">
+<header class="navbar navbar-default navbar-fixed-top" role="navigation">
 		<div class="container">
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-3" ng-click="browseStorage.nav_top_collapsed = !browseStorage.nav_top_collapsed">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1">
 					<span class="sr-only">Toggle navigation</span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand visible-xs" href="#"><i class="glyphicon glyphicon-th-list"></i> browseStorage</a>
+				<a class="navbar-brand" href="#/about"><i class="glyphicon glyphicon-th-list"></i> browseStorage</a>
 			</div>
-			<nav class="hidden-xs">
+			<div class="collapse navbar-collapse" id="navbar-collapse-1">
 				<ul class="nav navbar-nav">
-					<a href="#/about" role="button" class="navbar-brand">
-						<i class="glyphicon glyphicon-th-list"></i> browseStorage
-					</a>
 					<li><a href="#/docs">Documentation</a></li>
 					<li><a href="https://github.com/cynergi/browseStorage">Download</a></li>
 					<li class="dropdown" ng-controller="TableListCtrl">
@@ -137,16 +133,7 @@
 						</ul>
 					</li>
 				</ul>
-			</nav>
-			<nav class="visible-xs" collapse="!browseStorage.nav_top_collapsed">
-				<ul class="nav navbar-nav">
-					<!--
-					    <li><a href="#getting_started" ng-click="isCollapsed = !isCollapsed">Getting started</a></li>
-					    -->
-					<li><a href="#directives_small" ng-click="browseStorage.nav_top_collapsed = !browseStorage.nav_top_collapsed">Directives</a></li>
-				</ul>
-			</nav>
-		</div>
+			</div>
 	</div>
 </header>
 <div class="header-placeholder"></div>
@@ -157,7 +144,7 @@
 	</div>
 	<div class="modal-body">
 		<p ng-repeat="line in (text.body | array_of_lines) track by $index">{{line}}</p>
-		<p ng-if="is_yesno">With a keyboard you can <kbd>alt + click</kbd> on the <kbd><i class="glyphicon glyphicon-remove"></i> Delete</kbd> button to skip this confirmation next time.</p>
+		<p ng-if="is_yesno">With a keyboard you can <no-kbd>alt+click</no-kbd> on the <no-kbd><i no-class="glyphicon glyphicon-remove"></i>Delete</no-kbd> button to skip this confirmation next time.</p>
 	</div>
 	<div class="modal-footer">
 		<button type="submit"  class="btn btn-warning" ng-click="okClick()"    >{{text.ok}}</button>

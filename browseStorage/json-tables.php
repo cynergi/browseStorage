@@ -150,6 +150,9 @@ try	{
 	$groups_xlat = array( 0 => "" );
 
 
+	// Iterate \browseStorage\TableClass::$data_tables
+	// ====================================================================
+
 	$nogroups = ( isset($_REQUEST['nogroups']) );
 	$group_key = 0;
 
@@ -208,11 +211,17 @@ try	{
 			}
 		}
 
+	// Remove table grouping by groups, if caller prefers it that way
+	// ====================================================================
+
 	if( $nogroups )
 		{
 		$json['tables'] = $json_groups[0]['tables'];
 		unset( $json_groups, $json['groups'] );
 		}
+
+	// Finish
+	// ====================================================================
 
 	// Check if PHP made any (unexpected) output, and if so, report it to the caller as an error,
 	// by throwing an exception.
