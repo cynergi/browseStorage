@@ -30,6 +30,12 @@
 		browseStorage.initial_search = window.location.search;
 
 		/**
+		 * Whether the top navbar menu is collapsed in mobile devices.
+		 * @type boolean
+		 */
+		browseStorage.nav_top_collapsed = true;
+
+		/**
 		 * Onload function handler for external CSS style.
 		 * Deletes the inlined fallback CSS style, if it hasn't been
 		 * deleted already.
@@ -107,7 +113,7 @@
 	<div class="navbar-inner">
 		<div class="container">
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-3" ng-click="isCollapsed = !isCollapsed">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-3" ng-click="browseStorage.nav_top_collapsed = !browseStorage.nav_top_collapsed">
 					<span class="sr-only">Toggle navigation</span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
@@ -121,6 +127,7 @@
 						<i class="glyphicon glyphicon-th-list"></i> browseStorage
 					</a>
 					<li><a href="#/docs">Documentation</a></li>
+					<li><a href="https://github.com/cynergi/browseStorage">Download</a></li>
 					<li class="dropdown" ng-controller="TableListCtrl">
 						<a role="button" class="dropdown-toggle">
 							Demo Tables <b class="caret"></b>
@@ -131,12 +138,12 @@
 					</li>
 				</ul>
 			</nav>
-			<nav class="visible-xs" collapse="!isCollapsed">
+			<nav class="visible-xs" collapse="!browseStorage.nav_top_collapsed">
 				<ul class="nav navbar-nav">
 					<!--
 					    <li><a href="#getting_started" ng-click="isCollapsed = !isCollapsed">Getting started</a></li>
 					    -->
-					<li><a href="#directives_small" ng-click="isCollapsed = !isCollapsed">Directives</a></li>
+					<li><a href="#directives_small" ng-click="browseStorage.nav_top_collapsed = !browseStorage.nav_top_collapsed">Directives</a></li>
 				</ul>
 			</nav>
 		</div>
@@ -153,8 +160,8 @@
 		<p ng-if="is_yesno">With a keyboard you can <kbd>alt + click</kbd> on the <kbd><i class="glyphicon glyphicon-remove"></i> Delete</kbd> button to skip this confirmation next time.</p>
 	</div>
 	<div class="modal-footer">
-		<button type="submit"  class="btn btn-warning" ng-click="ok()"    >{{text.ok}}</button>
-		<button ng-if="!is_ok" class="btn btn-success" ng-click="cancel()">{{text.cancel}}</button>
+		<button type="submit"  class="btn btn-warning" ng-click="okClick()"    >{{text.ok}}</button>
+		<button ng-if="!is_ok" class="btn btn-success" ng-click="cancelClick()">{{text.cancel}}</button>
 	</div>
 </script
 ><script type="text/javascript" language="JavaScript"><!--
@@ -183,9 +190,9 @@
 			}
 	};
 --></script
-><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.min.js"></script
-><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-route.min.js"></script
-><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-touch.min.js"></script
+><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script
+><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.min.js"></script
+><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-touch.min.js"></script
 ><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="browseStorage/ui-bootstrap-tpls-0.11.0.min.js"></script
 ><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="browseStorage/browseStorage.js"></script
 ><script type="text/javascript" language="JavaScript"><!--

@@ -180,12 +180,34 @@ function( $scope,   $modalInstance,   text )
 	$scope.text.ok     = ( $scope.is_yesno ? "Yes" : "Ok"     );
 	$scope.text.cancel = ( $scope.is_yesno ? "No"  : "Cancel" );
 
-	$scope.ok = function () {
+	$scope.okClick = function () {
 		$modalInstance.close( true );
 		};
 
-	$scope.cancel = function () {
+	$scope.cancelClick = function () {
 		$modalInstance.dismiss( 'cancel' );
+		};
+}]);
+
+
+/**
+ * Datepicker controller.
+ */
+browseStorage.app.controller( 'DatepickerCtrl',
+[        '$scope',
+function( $scope )
+{
+	$scope.datepicker_open = false;
+
+	$scope.datepickerOpenClick = function($event) {
+		$event.preventDefault();
+		$event.stopPropagation();
+		$scope.datepicker_open = true;
+	};
+
+	$scope.datepicker_options = {
+		initDate: new Date(),
+		startingDay: 1
 		};
 }]);
 
@@ -265,7 +287,6 @@ function( $scope,   $routeParams,   $http,   $location,   $modal,   $q )
 		};
 
 	$scope.row = {};
-	$scope.datepicker_open = false;
 
 	// Add `id0`, `id1`, `id2`, etc. parameters
 	var id_num = 0;

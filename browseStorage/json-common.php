@@ -77,6 +77,33 @@ header( "Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-c
 
 
 /**
+ * Class for storing a raw SQL string.
+ *
+ * This class is used to distinguish when a filter assigns a string value to
+ * a column, if that string should be escaped or not. If the string was
+ * constructed with this class, it should not as it refers to a raw SQL
+ * command / constant.
+ */
+class RawSQL
+{
+	/** The SQL string.
+	 *  @var string */
+	public $sql;
+
+	/**
+	 * Constructor creating this raw SQL string.
+	 *
+	 * @param  $sql string
+	 *         The SQL string.
+	 */
+	function __construct( $sql )
+	{
+		$this->string = $sql;
+	}
+}
+
+
+/**
  * Class for storing a data source connection for access to a specific table.
  *
  * Class provides grouping (packing) of contextualy similar variables,

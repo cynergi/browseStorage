@@ -229,13 +229,23 @@ try	{
 					case 'I':
 						$select = "";
 						foreach( $req_col_values as $col => $value )
-							$select .= $tab_obj->src->quote($value) . ", ";
+							{
+							if( $value instanceof \browseStorage\RawSQL )
+								$select .= $value->sql . ", ";
+							else
+								$select .= $tab_obj->src->quote($value) . ", ";
+							}
 						$select = "INSERT INTO " . $tab['table'] . " (" . implode(", ", array_keys($req_col_values)) . ") VALUES (" . substr($select, 0, -2) . ")" . $where;
 						break;
 					case 'U':
 						$select = "";
 						foreach( $req_col_values as $col => $value )
-							$select .= $col . "=" . $tab_obj->src->quote($value) . ", ";
+							{
+							if( $value instanceof \browseStorage\RawSQL )
+								$select .= $col . "=" . $value->sql . ", ";
+							else
+								$select .= $col . "=" . $tab_obj->src->quote($value) . ", ";
+							}
 						$select = "UPDATE " . $tab['table'] . " SET " . substr($select, 0, -2) . $where;
 						break;
 					case 'D':

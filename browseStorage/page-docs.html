@@ -672,7 +672,20 @@ CREATE TABLE pet (
 			<tr>
 				<td valign="top"><code>text</code></td>
 				<td valign="top">
-					Free text.
+					Free text (1 line).
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>textarea</code></td>
+				<td valign="top">
+					Free text (5 lines). Unmarked.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>textaddr</code></td>
+				<td valign="top">
+					Free text (5 lines). Marked with an
+					icon of a home to denote an address.
 				</td>
 			</tr>
 			<tr>
@@ -732,6 +745,20 @@ CREATE TABLE pet (
 				<td valign="top"><code>color</code></td>
 				<td valign="top">
 					A color.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>checkbox</code></td>
+				<td valign="top">
+					A checkbox.
+					If checked, the value of this column
+					will be 1.
+					If unchecked, the value of this column
+					will be 0.
+					Note that with a checkbox, the column's
+					name is shown to the right of the
+					checkbox control, not on the left as
+					usual.
 				</td>
 			</tr>
 			<tr>

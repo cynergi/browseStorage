@@ -131,7 +131,7 @@ $browseStorage_group1 = "My table group 1";
 		),
 	//	'col_name'   => 'Name',
 		'col_names'  => array(	'AccountID' => array("Internal database ID", "label"),
-					'Name' => array("Name", "date", "Name of account. Describe what we're doing for the customer."),
+					'Name' => array("Name", "text", "Name of account. Describe what we're doing for the customer."),
 			// 4th item would be array of options
 		),
 		'editable'   => \browseStorage\TableClass::EDITABLE_ON_REQUEST,
@@ -343,6 +343,11 @@ function browseStorage_filter_read_after( $table_key, &$tab_obj, $req_ids, &$jso
  *         Associative array of strings. Keys are column identifiers and values
  *         are column values. These specify the values to change in the
  *         specified record.
+ *         This filter function can change this array (like many others), but
+ *         with one added functionality. Column values can be set to objects of
+ *         class `\browseStorage\RawSQL`. These will not be escaped when
+ *         creating the SQL string, allowing you to create NULL values, computed
+ *         dates, sub-queries and so on.
  * @param  $json array
  *         A pre-prepared JSON associative array that will be returned to the
  *         HTTP caller. All values are set except for the column values.
