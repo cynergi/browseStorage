@@ -1,0 +1,904 @@
+<div class="container">
+<div class="row">
+	<div class="col-md-12">
+
+		<section>
+			<br /><br />
+
+			<div class="page-header">
+				<h1><i class="glyphicon glyphicon-th-list"></i> browseStorage <small>Documentation</small></h1>
+			</div>
+
+			<p class="lead">
+			browseStorage is an open-source Web application
+			that allows you, the developer, to offer your users an
+			interface to your data stores (e.g.: databases) by
+			merely configuring the expected general interface.
+			</p>
+
+			<p class="lead">
+			Little or no code writing is required.
+			</p>
+
+			<p><small>Version 0.1 (2014-09-17) (beta)</small></p>
+			<br />
+
+
+			<h3>Motivation</h3>
+
+			<p>
+			<a href="https://angularjs.org">AngularJS</a> and
+			<a href="http://getbootstrap.com">Bootstrap</a>
+			have helped Web developers rapidly bring data-based
+			applications to fruition. But often, especially on
+			backend applications, a lot of boilerplate code
+			still needs to be written. You often just want
+			your users to know how to use a DBMS.
+			</p>
+
+			<p>
+			But users don't know how to use a DBMS.
+			</p>
+
+			<p>
+			Even if users could be taught how to use a DBMS,
+			you'd have to warn them not to modify
+			the <i>structure</i> of your database, just the data.
+			And not to change the data in some tables.
+			And in those tables they <i>can</i> edit, some
+			fields/columns need to be bound to a set of values.
+			And so on...
+			</p>
+
+			<p>
+			That will <i>never</i> work.
+			And that is where browseStorage enters the picture.
+			</p>
+
+			<p>
+			You install browseStorage on a Web server with PHP
+			support. You edit a single file (<code>config.php</code>)
+			where you change values in a couple of arrays, according
+			to instructions. These values specify what you want
+			browseStorage to provide. And what you want it to block.
+			</p>
+
+			<p>
+			browseStorage does the rest and provides your users
+			with a simple, intuitive, error-free and secure UI
+			into your data. Try the demo tables in the menu, above.
+			</p>
+
+			<p>
+			Problem solved!
+			</p>
+
+
+			<h3>Features</h3>
+
+			<p>
+			<b>browseStorage</b> offers the ability to work with
+			most DBMSs, currently:
+			<ul>
+			<li>MySQL</li>
+			<li>ODBC</li>
+			<li>SQLite</li>
+			</ul>
+			<a href="http://php.net/manual/en/pdo.drivers.php">More
+			DBMS support</a> can easily be added by configuring its
+			<a href="http://php.net/manual/en/pdo.construct.php">DSN
+			parameter on PHP's PDO constructor</a> in
+			<code>json-common.php</code>.
+			</p>
+
+			<p>
+			browseStorage furthermore, features:
+			<ul>
+			<li>Mobile device compatibility.</li>
+			<li>Easy integration with external services, by
+			    supporting custom filters before and after data is
+			    read and written.</li>
+			<li>Transactions to ensure data consistency, taking
+			    into account any external services.</li>
+			<li>Gzip compression of JSON output, if supported by
+			    the browser.</li>
+			<li>SQL injection protection.</li>
+			<li>JSON vulnerability protection (as
+			    <a href="https://docs.angularjs.org/api/ng/service/$http">supported
+			    by AngularJS</a>)</li>
+			<li>Low complexity in being modified to add additional
+			    frameworks: browseStorage uses a single global
+			    JavaScript object for all its state, and doesn't
+			    use any non-standard PHP libraries. It doesn't even
+			    use the <a href="http://framework.zend.com">Zend
+			    Framework</a>.</li>
+			<li>Low complexity in being modified to integrate
+			    existing projects: no global internal state needs
+			    to be stored <i>between</i> its views.</li>
+			<li>Low latency startup with a minimal set of external
+			    file dependecies.</li>
+			<li>No jQuery dependency.</li>
+			</ul>
+			</p>
+
+			<h3>Framework dependency</h3>
+
+			<p>
+			browseStorage uses the following external frameworks:
+			<ul>
+			<li><a href="https://angularjs.org">AngularJS</a>,
+			    including <i>core</i>, <code>angular-route</code>
+			    and <code>angular-touch</code>.</li>
+			<li><a href="http://angular-ui.github.io/bootstrap/">UI
+			    Bootstrap</a> by the authors of AngularJS.</li>
+			<li><a href="http://getbootstrap.com">Bootstrap</a>
+			    CSS.</li>
+			<li>Bootstrap's <a href="http://glyphicons.com">Glyphicons</a>.
+			    Although not a framework <i>per se</i>, these icons
+			    are usually not free but are automatically included
+			    with Bootstrap CSS.</li>
+			</ul>
+			</p>
+
+			<p>
+			All these frameworks are taken from their CDNs, except
+			UI Bootstrap that doesn't have CDN support.
+			They have therefore not been modified in any way, and
+			can be replaced by your own version of them
+			(this implies changes to a single file:
+			<code>browseStorage.html</code>).
+			</p>
+
+			<h3>User-friendly error detection and prevention</h3>
+
+			<p>
+			Server-side errors tend to be invisible to developers.
+			You notice something must be wrong with the service
+			when the your client-side app silently breaks.
+			</p>
+			<p>
+			PHP is a language that by default outputs errors to
+			the browser. On normal Web development this is great,
+			but not so much for Web service development, where such
+			output simply breaks what a client expects to receive,
+			breaking the client with no output to the browser
+			window.
+			</p>
+			<p>
+			JavaScript is not much better. Initial browser support
+			for JavaScript included error popups whenever
+			JavaScript broke. This behavior changed more than a
+			decade ago to silently breaking on JavaScript errors.
+			</p>
+			<p>
+			We took some steps in helping developers ensure
+			error-free development with these technologies,
+			and to ensure users are never presented with an
+			application that simply stops working.
+			</p>
+
+			<p>
+			These are:
+			<ul>
+			<li><b>Detection of JavaScript load failure</b>.
+			    If any of the required external JavaScript files
+			    fails to load, the user is warned and requested to
+			    try again by refreshing the browser.</li>
+			<li><b>Fallback CSS</b>.
+			    If the external Bootstrap CSS file takes a while
+			    to load, or completely fails, the user is still
+			    presented with an elegant and functional
+			    application.</li>
+			<li><b>Reporting PHP errors and unexpected output</b>.
+			    All browseStorage PHP scripts monitor PHP output
+			    and use custom handling of PHP errors and
+			    exceptions. In all such cases, a special JSON file
+			    is returned informing the error, and this is
+			    displayed to the user as a popup modal.
+			    Remember that this feature cannot cover
+			    script compilation errors: at the very least
+			    test your script with <code>php -l <i>script.php</i></code>
+			    before running on the browser.</li>
+			</ul>
+			</p>
+
+
+			<h1>Installation</h1>
+
+			<p>
+			Copy the files into a public folder of your Web server.
+			Access that folder from a browser. It should be working!
+			</p>
+
+			<p>
+			You might have difficulties editing data.
+			See bellow, in System requirements, the item about
+			permissions.
+			</p>
+
+			<h3>System requirements</h3>
+
+			<p>
+			The following setup is required to be able to run
+			browseStorage:
+			<ul>
+			<li>Web server software (Apache, IIS, etc.)</li>
+			<li>PHP 5 installed and configured to work with the
+			    Web server, with support for the database you need.
+			    A standard installation of PHP has support for
+			    <a href="http://php.net/manual/en/pdo.drivers.php">all
+			    DBMS mentioned</a>.</li>
+			<li>Special permissions <i>to be able to write to the demo
+			    SQLite database</i>. This is <b>not required in production</b>,
+			    or at least the requirements might be different.
+			    The file and the folder where the SQLite database is
+			    (by default, <code>browseStorage-demos</code>), must
+			    both be writeable by PHP. On Linux and OS X you
+			    can quickly do this with the command
+			    <code>chmod a+w . demos.sq3</code>
+			    inside that folder.</li>
+			</ul>
+			</p>
+
+			<p>
+			The Web server and PHP can be running on your platform
+			of choice: Linux, OS X or Windows.
+			</p>
+
+
+			<h1>Terminology</h1>
+
+			<p>
+			We use the term <i>storage engine</i> interchageably
+			with <i>DBMS</i>. Our term will eventually include
+			non-relational database "engines" such as INI files,
+			hence its usage.
+			</p>
+
+			<p>
+			We use the term <i>table/column identifier</i> when
+			referring to their name inside the storage engine.
+			We use the term <i>table/column name</i> when referring
+			to the text that is shown on screen to represent these
+			tables/columns.
+			</p>
+
+			<p>
+			Say for instance you create the following table in
+			MySQL:
+			</p>
+
+<pre>
+CREATE TABLE pet (
+    name  VARCHAR(20),
+    owner VARCHAR(20)
+);
+</pre>
+
+			<p>
+			Now say that you'd like one row of this table to be
+			shown like this:
+			</p>
+
+			<div class="panel panel-default">
+			<div class="panel-heading">Pets</div>
+			<table class="table">
+			<tbody>
+			<tr>
+				<th>Pet name</th>
+				<td>Bobby</td>
+			</tr>
+			<tr>
+				<th>Legal owner</th>
+				<td>John Doe</td>
+			</tr>
+			</tbody>
+			</table>
+			</div>
+
+			<p>
+			Here, <code>pet</code> is a <i>table identifier</i>,
+			and <i>Pets</i> is the <i>table name</i>.
+			</p>
+
+			<p>
+			Conversely, <code>name</code> and <code>owner</code>
+			are <i>column identifiers</i> and <i>Pet name</i> and
+			<i>Legal owner</i> are <i>column names</i>.
+			</p>
+
+
+			<h1>Configuration</h1>
+
+			<p>
+			browseStorage configuration takes place entirely on the
+			<code>browseStorage/config.php</code> file. This file
+			was edited in UTF-8, and should be kept in that
+			character set so that all strings are in UTF-8.
+			This is because all strings are passed to
+			<code>json_encode()</code> without change and this
+			function, as well as the JSON standard, expects UTF-8.
+			</p>
+
+			<p>
+			When you open this file you see three large comments
+			separating three major areas for configuration:
+			sources, tables and filters.
+			</p>
+
+			<h3>Sources</h3>
+
+			<p>
+			Sources specify database connection parameters where
+			data tables may be found. Externaly you will not
+			reference this array, but the next array (of tables)
+			will reference this one to tell browseStorage where
+			to find the table.
+			</p>
+
+			<p>
+			Sources are set in the static associative array
+			<code>\browseStorage\TableClass::$data_sources</code>.
+			Each item of that array is a different source.
+			The item's key is the identifier that will allow
+			us to refer to that source later on.
+			</p>
+
+			<p>
+			Each item's value is in turn another associative array.
+			The keys in that array name properties we can set
+			to configure each source. The following keys are
+			available:
+			</p>
+
+			<table class="table">
+			<thead>
+			<tr>
+				<th align="left">Key&nbsp;name</th>
+				<th align="left">Meaning</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr>
+				<td valign="top"><code>engine</code></td>
+				<td valign="top">
+					This is the identifier of the storage
+					engine (often a DBMS) that this source
+					uses. This is case-insensitive, and the
+					available values are listed in a
+					<code>switch()</code> inside the class
+					constructor in file
+					<code>browseStorage/json-common.php</code>.
+					Currently, these are <code>mysql</code>,
+					<code>odbc</code> and
+					<code>sqlite</code>.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>file</code></td>
+				<td valign="top">
+					This is only available for the
+					<code>sqlite</code> storage engine,
+					and in fact, this engine does not use
+					any other keys.
+					<code>file</code> is the pathname
+					(relative to the
+					<code>browseStorage/json-common.php</code>
+					file) where the SQLite database file
+					may be found.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>server</code></td>
+				<td valign="top">
+					The server name
+					(<a href="http://en.wikipedia.org/wiki/Fully_qualified_domain_name">FQDN</a>
+					or IP number) where the DBMS is installed.
+					Usually <code>localhost</code> in simple
+					installations.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>schema</code></td>
+				<td valign="top">
+					The schema (or database) identifier.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>user</code></td>
+				<td valign="top">
+					The user to log on as, into the DBMS.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>passwd</code></td>
+				<td valign="top">
+					The user's password.
+				</td>
+			</tr>
+			</tbody>
+			</table>
+
+			<h3>Tables</h3>
+
+			<p>
+			Tables are what browseStorage can browse.
+			Currently browseStorage lists tables as a simple list
+			of names, but support exists to specify icons and
+			groups for them.
+			</p>
+
+			<p>
+			Tables are set in the static associative array
+			<code>\browseStorage\TableClass::$data_tables</code>.
+			Each item of that array is a different table.
+			The item's key is the identifier that will allow
+			us to refer to that table later on.
+			</p>
+
+			<p>
+			Each item's value is in turn another associative array.
+			The keys in that array name properties we can set
+			to configure each table. The following keys are
+			available:
+			</p>
+
+			<table class="table">
+			<thead>
+			<tr>
+				<th align="left">Key&nbsp;name</th>
+				<th align="left">Meaning</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr>
+				<td valign="top"><code>source</code></td>
+				<td valign="top">
+					This is the identifier of the source, one of the keys of
+					the sources array as explained above, and specified in
+					<code>\browseStorage\TableClass::$data_sources</code>.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>table</code></td>
+				<td valign="top">
+					This is the identifier for the table.
+					The string must already be quoted (if necessary) so that this
+					name is understood as a table name in a SQL statement.
+					This string will <i>not</i> be modified when inserting it
+					into a SQL statement. You should be very careful not to
+					assign this value from an external source without verification!
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>name</code></td>
+				<td valign="top">
+					This is the UTF-8 name of the table, as it will be shown to
+					users. If missing, browseStorage will modify the table
+					identifier to look like a name.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>group</code></td>
+				<td valign="top">
+					This is the UTF-8 group name of the table, as it will be shown to
+					users. Can be missing.
+					Tables with the exact same group name will be grouped together
+					when presented to the user (this is not yet implemented in
+					browseStorage).
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>icon</code></td>
+				<td valign="top">
+					This is a URI for an image file that will represent this group.
+					Optional.
+					This is not yet implemented in browseStorage.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>col_id</code></td>
+				<td valign="top">
+					A string or array of strings.
+					No keys should be set (i.e., should
+					be numerically keyed starting at 0).
+					Each string is a column identifier of
+					a primary key of this table.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>col_name</code></td>
+				<td valign="top">
+					A string with the column identifier that
+					will be used as the title of the views
+					that show and edit a row/entry.
+					If missing, the first column in
+					<code>col_id</code> is used.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>col_names</code></td>
+				<td valign="top">
+					<p>
+					This is an associative array that
+					describes how each column should be
+					displayed to the user. If missing,
+					browseStorage automates this as simple
+					text fields with names similar to their
+					identifiers.
+					</p>
+					<p>
+					In this array, each key is a column
+					identifier being described. You can
+					repeat the columns you already specified
+					in <code>col_id</code>. Columns not
+					set here are not displayed and not
+					editable.
+					</p>
+					<p>
+					In this array, each value is in turn
+					an array (numerically keyed starting at
+					0), where each item is:
+					<ol start="0">
+					<li>Column name to display before its
+					    value</li>
+					<li>Control identifier for editing the
+					    column value. See bellow for
+					    supported controls. Defaults to
+					    <code>text</code> if missing.</li>
+					<li>Help text, displayed as greyed text
+					    bellow the control, while
+					    editing.</li>
+					<li>Available options for the value of
+					    this column (used if the control is
+					    <code>radio</code> or
+					    <code>select</code>). It is an
+					    associative array where keys are
+					    the possible column values and the
+					    array's values are the text to
+					    display for each.</li>
+					</ol>
+					</p>
+					<p>
+					Example:
+					</p>
+<pre>
+'col_names'  => array(
+//  'UsrID'  => array(),  // Comented-out = don't display
+    'Name'   => array( "Name",     "text",     "Short name of user." ),
+    'Email'  => array( "E-mail",   "email",    "E-mail address."     ),
+    'Addr'   => array( "Address",  "textarea", "Street address."     ),
+    'LangID' => array( "Language", "radio",    "Spoken language.",
+                       array( 0 => "English",
+                              1 => "French",
+                              2 => "Spanish",
+                              3 => "Portuguese" )
+                ),
+);
+</pre>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>editable</code></td>
+				<td valign="top">
+					<p>
+					A combination of constants where you
+					state how data in this table can be
+					changed (edited).
+					</p>
+					<p>
+					You start with one of the following
+					constants that state what can be done
+					to <i>existing</i> rows of the table:
+					<ul>
+					<li><code>\browseStorage\TableClass::NOT_EDITABLE</code>.
+					    Rows cannot be changed.</li>
+					<li><code>\browseStorage\TableClass::EDITABLE_ON_REQUEST</code>.
+					    Rows can be changed when the user
+					    explicitly presses an
+					    <kbd><i class="glyphicon glyphicon-pencil"></i> Edit</kbd>
+					    button. The user has the option
+					    to skip this step by selecting the
+					    row with
+					    <kbd>alt + click</kbd>.</li>
+					<li><code>\browseStorage\TableClass::EDITABLE_IMMEDIATELY</code>.
+					    Rows open in change mode/form
+					    immediately when chosen from a
+					    list.</li>
+					</ul>
+					</p>
+					<p>
+					You now add (<code>+</code>) or
+					bitwise-OR (<code>|</code>) one of those
+					constants, with zero, one or both of
+					the following constants:
+					<ul>
+					<li><code>\browseStorage\TableClass::CAN_INSERT</code>.
+					    The user can add new rows.</li>
+					<li><code>\browseStorage\TableClass::CAN_DELETE</code>.
+					    The user can delete rows.</li>
+					</ul>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top">
+					<code>filter_list_before</code>,<br />
+					<code>filter_list_after</code>,<br />
+					<code>filter_read_before</code>,<br />
+					<code>filter_read_after</code>,<br />
+					<code>filter_write_before</code>,<br />
+					<code>filter_write_after</code>
+				</td>
+				<td valign="top">
+					These are strings with the name of
+					functions that will work as the
+					respective filters, as indicated by the
+					key name.
+					If missing, the filter is not active
+					(i.e., no function is called).
+					See the section bellow for more
+					information.
+				</td>
+			</tr>
+			</tbody>
+			</table>
+
+			<h4>Controls</h4>
+
+			<p>
+			Controls are user-interface elements that allow a user
+			to provide an application with certain types of data.
+			Depending on the type of data being input, there are
+			different controls that are more suited to the task.
+			</p>
+
+			<table class="table">
+			<thead>
+			<tr>
+				<th align="left">Control&nbsp;identifier</th>
+				<th align="left">Meaning</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr>
+				<td valign="top"><code>label</code></td>
+				<td valign="top">
+					Free, <b>uneditable</b>, text.
+					Should be used in columns that should
+					be shown, but not changed.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>text</code></td>
+				<td valign="top">
+					Free text.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>password</code></td>
+				<td valign="top">
+					Password text. Typing is hidden.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top">
+					<code>datetime</code>,<br />
+					<code>datetime-local</code>,<br />
+					<code>month</code>,<br />
+					<code>week</code>
+				</td>
+				<td valign="top">
+					Date- and time-related content.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>date</code></td>
+				<td valign="top">
+					A date. A date picker is available.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>time</code></td>
+				<td valign="top">
+					A time. A time picker is available.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>number</code></td>
+				<td valign="top">
+					Any number in the decimal base.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>email</code></td>
+				<td valign="top">
+					An e-mail address.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>tel</code></td>
+				<td valign="top">
+					A telephone number.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>url</code></td>
+				<td valign="top">
+					A Web site URL.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>color</code></td>
+				<td valign="top">
+					A color.
+				</td>
+			</tr>
+			<tr>
+				<td valign="top">
+					<code>select</code>,<br />
+					<code>radio</code>
+				</td>
+				<td valign="top">
+					A <code>&lt;select/&gt;</code> HTML
+					element, or a group of radio buttons,
+					to select one of the available options.
+				</td>
+			</tr>
+			</tbody>
+			</table>
+
+			<p>
+			Remember that on screen-space-restricted devices, such
+			as smartphones, the correct control type helps the
+			device open abbreviated keyboards that are easier to
+			use for that type of data.
+			</p>
+
+			<h3>Filters</h3>
+
+			<p>
+			Filters are PHP functions that are invoked before
+			and/or after each data retrieval/change process:
+			listing rows, reading one row, and writing
+			(insert/update/delete) one row.
+			</p>
+
+			<p>
+			They can be used to:
+			<ul>
+			<li>Validate data.</li>
+			<li>Fill-in default values for non-editable columns
+			    before writing/creating them.</li>
+			<li>Read/write data in related tables using foreign
+			    keys.</li>
+			<li>Auditing, i.e., recording every change of data
+			    without ever losing any data itself. Financial
+			    institutions need this feature, for instance,
+			    to track operations.</li>
+			<li>Trigger external processes for syncing
+			    workflows. For instance, adding a row to an
+			    <code>accounts</code> table might require calling
+			    an account setup Web service and a billing record
+			    Web service, all things PHP does with ease.</li>
+			</ul>
+			Or anything else, really.
+			</p>
+
+			<p>
+			If the filter triggers an exception, the process is
+			interrupted (in case of a write process, the transaction
+			is rolled back) and the exception's message is sent
+			back to the browser to be displayed to the user.
+			</p>
+
+			<p>
+			You can learn more about what is available to you in
+			each filter by looking at the corresponding template
+			functions in <code>browseStorage/config.php</code>.
+			</p>
+
+			<h1>Integrating browseStorage with your projects</h1>
+
+			<p>
+			In production, browseStorage consists of a single
+			<code>browseStorage.html</code> file and a
+			<code>browseStorage</code> folder. Both can be added
+			to any project folder and are unlikely to collide with
+			existing files.
+			</p>
+
+			<p>
+			browseStorage does not maintain an internal global
+			state to be able to navigate across views. You are
+			welcome to read the source and link to parts of
+			browseStorage as needed.
+			</p>
+
+			<p>
+			To edit the navigation bar at the top of browseStorage,
+			look at the file <code>browseStorage.html</code>, and
+			its <code>&lt;header/&gt;</code> tag. Change the code
+			there using for reference
+			<a href="http://getbootstrap.com/components/#navbar">Bootstrap's
+			Navbar component</a>.
+			</p>
+
+			<h1>Performance Notes</h1>
+
+			<h3>Large tables</h3>
+			<p>
+			browseStorage is not yet ready to paginate long table
+			contents. The PHP JSON service fully supports pagination,
+			but the AngularJS code is not using these features.
+			</p>
+
+			<h3>PHP Common Classes</h3>
+			<p>
+			The common PHP classes in <code>json-common.php</code>
+			do not fully provide storage source abstraction,
+			even though this would be desirable from a developer
+			point of view. This is to avoid having PHP load and
+			parse a large code base for every single JSON service,
+			when in fact only a very small part of that code base
+			is used in each instance. We opted instead to have
+			such storage-engine-dependent code in each JSON service
+			(e.g.: <code>json-list.php</code>).
+			</p>
+
+			<h1>To-do</h1>
+
+			<p>
+			Add support to:
+			<ul>
+			<li>Live searching on large tables.</li>
+			<li>Pagination on large tables.</li>
+			<li>Support for other storage engines such as
+			    INI files, CSV files, Berkeley DB files, Constant
+			    database (cdb) files.</i></li>
+			<li>Control types "button" and "icon". Displayed
+			    right-most on each row of a list, and displayed in
+			    a drop-down menu when reading an entry.
+			    Both read-only.</li>
+			<li>Configuration of common foreign key setups.</li>
+			<li>Multi-language support.</li>
+			<li>Generate source code documentation with
+			    phpDocumentor</li>
+			<li>Auditing (although this can be done with filters)</li>
+			<li>PHPUnit tests</li>
+			<li>AngularJS tests</li>
+			</ul>
+			</p>
+
+		</section>
+
+	</div>
+</div>
+</div>
+<footer class="navbar navbar-default" style="margin-bottom:0">
+	<div class="container text-muted small">
+		<div class="col-md-6">
+		<p>
+			<dl>
+			<dt>browseStorage</dt>
+			<dd>
+			<a href="http://www.cynergi.com/browseStorage/">www.cynergi.com/browseStorage</a><br />
+			<a href="">MIT License</a> | <a href="">Source at GitHub</a>
+			</dd>
+			</dl>
+		</p>
+		</div>
+
+		<div class="col-md-6">
+		<p>
+			<dl>
+			<dt>Author</dt>
+			<dd>
+			Pedro Freire @ <a href="http://www.cynergi.com">Cynergi</a> | <a href="https://www.linkedin.com/in/pfreire">LinkedIn profile</a><br />
+			browseStorage <a href="http://www.cynergi.com/cynergi-faq-support-contacts.php">customization services available</a>
+			</dd>
+			</dl>
+		</p>
+		</div>
+	</div>
+</footer>

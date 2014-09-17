@@ -1,0 +1,41 @@
+<div class="container">
+<div class="row">
+	<div class="col-md-12">
+
+		<section>
+			<br /><br />
+
+			<div class="page-header">
+				<h1><small>Showing</small> {{row.columns[row.col_name].value}}</h1>
+			</div>
+
+			<br />
+
+
+			<form class="form-horizontal" role="form">
+				<div class="form-group" ng-repeat="col in row.columns | add_show_property">
+					<label class="col-sm-3 control-label">{{col.name}}</label>
+					<p ng-if="col.show == 'true'"   class="col-sm-9 form-control-static"><i class="glyphicon glyphicon-check"        ></i> <i>Yes</i></p>
+					<p ng-if="col.show == 'false'"  class="col-sm-9 form-control-static"><i class="glyphicon glyphicon-unchecked"    ></i> <i>No</i></p>
+					<p ng-if="col.show == 'null'"   class="col-sm-9 form-control-static"><i class="glyphicon glyphicon-remove-circle"></i> <i>Null</i></p>
+					<p ng-if="col.show == 'option'" class="col-sm-9 form-control-static"><i class="glyphicon glyphicon-th-list"      ></i> {{col.options[col.value]}}</p>
+					<p ng-if="col.show == 'other'"  class="col-sm-9 form-control-static">{{col.value}}</p>
+				</div>
+				<div class="form-group">
+					<br /><br />
+					<div class="col-sm-12">
+					<button class="btn btn-default" onclick="window.history.back();" type="submit"
+						><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
+					<button ng-if="row.can_edit > 0" class="btn btn-default" ng-click="editClick();"
+						><i class="glyphicon glyphicon-pencil"></i> Edit</button>
+					<button ng-if="row.can_delete" class="btn btn-default" ng-click="deleteClick($event);"
+						><i class="glyphicon glyphicon-remove"></i> Delete</button>
+					</div>
+				</div>
+			</form>
+
+		</section>
+
+	</div>
+</div>
+</div>

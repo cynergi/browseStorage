@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html ng-app="browseStorageApp" xmlns="http://www.w3.org/1999/html">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="Content-Type"        content="text/html; charset=UTF-8" />
+	<meta http-equiv="Content-Language"    content="en" />
+	<meta http-equiv="X-UA-Compatible"     content="IE=edge" />
+	<meta http-equiv="Content-Script-Type" content="text/javascript" />
+	<meta http-equiv="Content-Style-Type"  content="text/css" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>browseStorage</title>
+	<meta name="description" content="AngularJS- and UI Bootstrap-based generic data browser and editor" />
+	<meta name="Author" content="Pedro Freire" />
+	<meta name="Copyright" content="Cynergi. Open Source. License to be determined." />
+
+	<script type="text/javascript" language="JavaScript"><!--
+		/**
+		 * Global object.
+		 * Global namespace pollution is not critical as this file is
+		 * self-contained for a specific application, and should not be
+		 * /included/ into other applications. Global namespace
+		 * pollution is limited to this object, though.
+		 */
+		var browseStorage = {};
+
+		/**
+		 * Initial search string when calling this file.
+		 * @type string
+		 */
+		browseStorage.initial_search = window.location.search;
+
+		/**
+		 * Onload function handler for external CSS style.
+		 * Deletes the inlined fallback CSS style, if it hasn't been
+		 * deleted already.
+		 */
+		browseStorage.delete_style =
+		function()
+		{
+			var s_old = document.getElementById( 'temp-style' );
+			if( s_old )
+				s_old.parentNode.removeChild( s_old );
+		};
+	--></script>
+	<style id="temp-style" type="text/css"><!--
+		/* Basic Bootstrap to display something elegant while CSS isn't loaded or it fails to load */
+		html	{
+			font-family: sans-serif;
+			-webkit-text-size-adjust: 100%;
+			-ms-text-size-adjust: 100%;
+			}
+		h1	{
+			font-size: 2em;
+			}
+		.navbar-fixed-top {
+			position: fixed;
+			top: 0;
+			right: 0;
+			left: 0;
+			z-index: 1030;
+			background-color: #f8f8f8;
+			padding: 16px;
+			}
+		.navbar ul, .navbar li {
+			display: inline;
+			padding: 12px;
+			}
+		.jumbotron {
+			padding: 30px;
+			margin-bottom: 30px;
+			background-color: #eee;
+			}
+		.jumbotron p {
+			font-size: 21px;
+			font-weight: 200;
+			}
+		.visible-xs, .sr-only, .navbar-toggle {
+			display: none !important;
+			}
+		@media (max-width: 767px) {
+			.hidden-xs {
+				display: none !important;
+				}
+			.visible-xs {
+				display: block !important;
+				}
+			}
+	--></style>
+	<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" onload="browseStorage.delete_style();" />
+	<style type="text/css"><!--
+		/* AngularJS's UI Bootstrap recomendation */
+		.nav, .pagination, .carousel, .panel-title a {
+			cursor: pointer;
+			}
+		/* Custom style used if JavaScript fails to load */
+		.browseStorageCenter {
+			position: absolute;
+			top: 35%;
+			left: 40%;
+			width: 20%;
+			text-align: center;
+			}
+	--></style>
+</head>
+<body>
+<header class="navbar navbar-default navbar-fixed-top">
+	<div class="navbar-inner">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-3" ng-click="isCollapsed = !isCollapsed">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand visible-xs" href="#"><i class="glyphicon glyphicon-th-list"></i> browseStorage</a>
+			</div>
+			<nav class="hidden-xs">
+				<ul class="nav navbar-nav">
+					<a href="#/about" role="button" class="navbar-brand">
+						<i class="glyphicon glyphicon-th-list"></i> browseStorage
+					</a>
+					<li><a href="#/docs">Documentation</a></li>
+					<li class="dropdown" ng-controller="TableListCtrl">
+						<a role="button" class="dropdown-toggle">
+							Demo Tables <b class="caret"></b>
+						</a>
+						<ul class="dropdown-menu">
+							<li ng-repeat="tab in json.tables"><a ng-href="#/list/{{tab.table_key}}">{{tab.name}}</a></li>
+						</ul>
+					</li>
+				</ul>
+			</nav>
+			<nav class="visible-xs" collapse="!isCollapsed">
+				<ul class="nav navbar-nav">
+					<!--
+					    <li><a href="#getting_started" ng-click="isCollapsed = !isCollapsed">Getting started</a></li>
+					    -->
+					<li><a href="#directives_small" ng-click="isCollapsed = !isCollapsed">Directives</a></li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</header>
+<div class="header-placeholder"></div>
+<div role="main" ng-view></div
+><script type="text/ng-template" id="modal.html">
+	<div class="modal-header">
+		<h3 class="modal-title">{{text.title}}</h3>
+	</div>
+	<div class="modal-body">
+		<p ng-repeat="line in (text.body | array_of_lines) track by $index">{{line}}</p>
+		<p ng-if="is_yesno">With a keyboard you can <kbd>alt + click</kbd> on the <kbd><i class="glyphicon glyphicon-remove"></i> Delete</kbd> button to skip this confirmation next time.</p>
+	</div>
+	<div class="modal-footer">
+		<button type="submit"  class="btn btn-warning" ng-click="ok()"    >{{text.ok}}</button>
+		<button ng-if="!is_ok" class="btn btn-success" ng-click="cancel()">{{text.cancel}}</button>
+	</div>
+</script
+><script type="text/javascript" language="JavaScript"><!--
+	/**
+	 * Boolean that store whether the `browseStorage.onjserror()`
+	 * function has already been called, so that the error is
+	 * shown only once.
+	 * @type boolean
+	 */
+	browseStorage.onjserror_ran = false;
+
+	/**
+	 * Onerror function handler for external JS files.
+	 * Issues a standard JavaScript alert.
+	 */
+	browseStorage.onjserror =
+	function()
+	{
+		if( !browseStorage.onjserror_ran )
+			{
+			browseStorage.onjserror_ran = true;
+			alert( "Some parts of this application could not be loaded.\n" +
+			       "Please try again later by refreshing your browser." );
+			if( document.readyState != "loading" )
+				browseStorage.clear_body();
+			}
+	};
+--></script
+><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular.min.js"></script
+><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-route.min.js"></script
+><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.24/angular-touch.min.js"></script
+><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="browseStorage/ui-bootstrap-tpls-0.11.0.min.js"></script
+><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="browseStorage/browseStorage.js"></script
+><script type="text/javascript" language="JavaScript"><!--
+	/**
+	 * Onerror function handler for external JS files.
+	 * Issues a standard JavaScript alert.
+	 */
+	browseStorage.clear_body =
+	function()
+	{
+		document.body.innerHTML = "<div class='browseStorageCenter'><h1>browseStorage</h1><p style='font-weight:200'>Application load failure</p><button style='width:100%; padding:16px;' onclick='window.location.reload();'>Please refresh</button></div>";
+	};
+
+	if( browseStorage.onjserror_ran )
+		browseStorage.clear_body();
+--></script
+></body>
+</html>

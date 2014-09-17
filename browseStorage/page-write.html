@@ -1,0 +1,101 @@
+<div class="container">
+<div class="row">
+	<div class="col-md-12">
+
+		<section>
+			<br /><br />
+
+			<div class="page-header">
+				<h1><small>{{add_new ? 'New' : 'Editing'}}</small> {{row.columns[row.col_name].value}}</h1>
+			</div>
+
+			<br />
+
+
+			<form name="input_form" class="form-horizontal" role="form">
+				<div class="form-group" ng-repeat="col in row.columns | add_show_property">
+					<label for="input-{{$index}}" class="col-sm-3 control-label">{{col.name}}</label>
+					<div ng-switch="col.control" class="col-sm-8">
+						<div ng-switch-when="label">
+							<p ng-if="col.show == 'true'"             class="form-control-static"><i class="glyphicon glyphicon-check"        ></i> <i>Yes</i></p>
+							<p ng-if="col.show == 'false'"            class="form-control-static"><i class="glyphicon glyphicon-unchecked"    ></i> <i>No</i></p>
+							<p ng-if="col.show == 'null' &&  add_new" class="form-control-static"><i class="glyphicon glyphicon-asterisk"     ></i> <i>Automatic</i></p>
+							<p ng-if="col.show == 'null' && !add_new" class="form-control-static"><i class="glyphicon glyphicon-remove-circle"></i> <i>Null</i></p>
+							<p ng-if="col.show == 'option'"           class="form-control-static"><i class="glyphicon glyphicon-th-list"      ></i> {{col.options[col.value]}}</p>
+							<p ng-if="col.show == 'other'"            class="form-control-static">{{col.value}}</p>
+						</div>
+						<select ng-switch-when="select" class="form-control" id="input-{{$index}}" ng-model="col.value">
+							<option ng-repeat="(key,opt) in col.options" value="{{key}}" ng-selected="col.value == key">{{opt}}</option>
+						</select>
+						<div ng-switch-when="radio">
+							<div ng-repeat="(key,opt) in col.options" class="radio">
+								<label>
+								<input type="radio" name="input-{{$index}}" id="radio-{{$index}}-{{key}}" value="{{key}}" ng-checked="col.value == key"> {{opt}}
+								</label>
+							</div>
+						</div>
+						<div ng-switch-when="date" class="input-group">
+							<input type="{{col.control}}" class="form-control" id="input-{{$index}}" placeholder="{{col.control | control_to_placeholder}}" ng-model="col.value" datepicker-popup="yyyy-MM-dd" is-open="datepicker_open" close-text="Close" />
+							<span class="input-group-btn">
+							<button type="button" class="btn btn-default" ng-click="datepicker_open = !datepicker_open"><i class="glyphicon glyphicon-calendar"></i></button>
+							</span>
+						</div>
+						<timepicker ng-switch-when="time" ng-model="col.value" hour-step="1" minute-step="5" show-meridian="0"></timepicker>
+						<div ng-switch-when="password" class="input-group">
+							<input type="{{col.control}}" class="form-control" id="input-{{$index}}" placeholder="{{col.control | control_to_placeholder}}" ng-model="col.value" />
+							<label for="input-{{$index}}" class="input-group-addon"><i class="glyphicon glyphicon-tower"></i></label>
+						</div>
+						<div ng-switch-when="datetime" class="input-group">
+							<input type="{{col.control}}" class="form-control" id="input-{{$index}}" placeholder="{{col.control | control_to_placeholder}}" ng-model="col.value" />
+							<label for="input-{{$index}}" class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></label>
+						</div>
+						<div ng-switch-when="datetime-local" class="input-group">
+							<input type="{{col.control}}" class="form-control" id="input-{{$index}}" placeholder="{{col.control | control_to_placeholder}}" ng-model="col.value" />
+							<label for="input-{{$index}}" class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></label>
+						</div>
+						<div ng-switch-when="month" class="input-group">
+							<input type="{{col.control}}" class="form-control" id="input-{{$index}}" placeholder="{{col.control | control_to_placeholder}}" ng-model="col.value" />
+							<label for="input-{{$index}}" class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></label>
+						</div>
+						<div ng-switch-when="week" class="input-group">
+							<input type="{{col.control}}" class="form-control" id="input-{{$index}}" placeholder="{{col.control | control_to_placeholder}}" ng-model="col.value" />
+							<label for="input-{{$index}}" class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></label>
+						</div>
+						<div ng-switch-when="number" class="input-group">
+							<input type="{{col.control}}" class="form-control" id="input-{{$index}}" placeholder="{{col.control | control_to_placeholder}}" ng-model="col.value" />
+							<label for="input-{{$index}}" class="input-group-addon">123</label>
+						</div>
+						<div ng-switch-when="email" class="input-group">
+							<input type="{{col.control}}" class="form-control" id="input-{{$index}}" placeholder="{{col.control | control_to_placeholder}}" ng-model="col.value" />
+							<label for="input-{{$index}}" class="input-group-addon">@</label>
+						</div>
+						<div ng-switch-when="tel" class="input-group">
+							<input type="{{col.control}}" class="form-control" id="input-{{$index}}" placeholder="{{col.control | control_to_placeholder}}" ng-model="col.value" />
+							<label for="input-{{$index}}" class="input-group-addon"><i class="glyphicon glyphicon-earphone"></i></label>
+						</div>
+						<div ng-switch-when="url" class="input-group">
+							<input type="{{col.control}}" class="form-control" id="input-{{$index}}" placeholder="{{col.control | control_to_placeholder}}" ng-model="col.value" />
+							<label for="input-{{$index}}" class="input-group-addon"><i class="glyphicon glyphicon-globe"></i></label>
+						</div>
+						<input ng-switch-default type="{{col.control}}" class="form-control" id="input-{{$index}}" placeholder="{{col.control | control_to_placeholder}}" ng-model="col.value" />
+						<span ng-if="col.help != ''" class="help-block">{{col.help}}</span>
+					</div>
+				</div>
+				<div class="form-group">
+					<br /><br />
+					<div class="col-sm-12">
+					<button class="btn btn-default" onclick="window.history.back();"
+						><i class="glyphicon glyphicon-chevron-left"></i> Cancel/Back</button>
+					<button class="btn btn-default" ng-click="saveClick();" type="submit" ng-disabled="input_form.$pristine"
+						><i class="glyphicon glyphicon-save"></i> Save</button>
+					<button ng-if="!add_new  &&  row.can_delete" class="btn btn-default" ng-click="deleteClick($event);"
+						><i class="glyphicon glyphicon-remove"></i> Delete</button>
+					</div>
+				</div>
+			</form>
+
+		</section>
+
+	</div>
+</div>
+</div>
