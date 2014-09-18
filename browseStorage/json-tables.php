@@ -66,6 +66,13 @@
  */
 
 
+// Base classes and utilities
+require_once( 'json-common.php' );
+
+use browseStorage\TableClass;
+use browseStorage\RawSQL;
+
+
 // ============================================================================
 // ####  Error handling  ######################################################
 // ============================================================================
@@ -96,12 +103,20 @@ try	{
 
 
 // ============================================================================
-// ####  Require  #############################################################
+// ####  Load configuration  ##################################################
 // ============================================================================
 
-	// Initial code requirements
-	require_once( 'json-common.php' );
-	require_once( 'config.php' );
+
+	/**
+	 * Initializing function. Allows the developer to create any local
+	 * variables in `config.php` without "polluting" the global namespace.
+	 */
+	function browseStorage_init()
+	{
+		require_once( 'config.php' );
+	}
+
+	browseStorage_init();
 
 
 // ============================================================================
@@ -137,7 +152,7 @@ try	{
 
 	/**
 	 * This will translate group key (an auto-integer) to group name as specified
-	 * in `\browseStorage\TableClass::$data_tables`.
+	 * in `browseStorage\TableClass::$data_tables`.
 	 * This array is first searched for a group name using:
 	 * * `array_search($group_name, $groups_xlat, true)`
 	 * If found, the group's key is the value returned by this function.
@@ -150,13 +165,13 @@ try	{
 	$groups_xlat = array( 0 => "" );
 
 
-	// Iterate \browseStorage\TableClass::$data_tables
+	// Iterate browseStorage\TableClass::$data_tables
 	// ====================================================================
 
 	$nogroups = ( isset($_REQUEST['nogroups']) );
 	$group_key = 0;
 
-	foreach( \browseStorage\TableClass::$data_tables as $table_key => $tab )
+	foreach( TableClass::$data_tables as $table_key => $tab )
 		{
 		$group_name = strval( @$tab['group'] );
 		if( !$nogroups )
@@ -181,12 +196,12 @@ try	{
 
 		$name = ( strlen(@$tab['name']) > 0    ?
 		          strval($tab['name'])         :
-		          \browseStorage\TableClass::ident_to_name($tab['table']) );
+		          TableClass::ident_to_name($tab['table']) );
 		$icon  = strval( @$tab['icon' ] );
 		if( $tab['table'] === '*' )
 			{
-			$tab_obj = new \browseStorage\TableClass( $table_key );
-			if( $tab_obj->src_type != \browseStorage\TableClass::TYPE_PDO )
+			$tab_obj = new TableClass( $table_key );
+			if( $tab_obj->src_type != TableClass::TYPE_PDO )
 				throw new Exception( sprintf($tab_obj->error_sprintf, "Can't retrieve all tables for a non-relational-database (SQL) data source ['table'] in") );
 			$pdo_s = $tab_obj->src->query( "SHOW TABLES" );
 			foreach( $pdo_s->fetchAll(PDO::FETCH_COLUMN, 0) as $tab_name )

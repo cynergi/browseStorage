@@ -6,24 +6,24 @@
 			<br /><br />
 
 			<div class="page-header">
-				<h1>{{table.name}} <small>Table Summary</small></h1>
+				<h1>{{table.name}} <small>Table&nbsp;Summary</small></h1>
 			</div>
 
 			<div class="col-sm-6 text-muted">
 				<p><small><no-kbd>Click/tap</no-kbd> a row to <span ng-if="table.can_edit==1">show the entry in more detail</span><span ng-if="table.can_edit&gt;=2">edit the entry</span>.
-				          <span ng-if="table.can_edit==1"><br />With a keyboard, you can also <no-kbd>alt+click</no-kbd> to immediately edit the entry.</span></small></p>
+				          <span ng-if="table.can_edit==1" class="hidden-xs"><br />With a keyboard, you can also <no-kbd>alt+click</no-kbd> to immediately edit the entry.</span></small></p>
 			</div>
 			<div class="col-sm-3 text-right">
 				<form ng-if="table.rows.length > 10" class="form-inline" role="form">
 					<div class="form-group">
-						<button class="btn btn-default" onclick="window.history.back();" type="submit"
+						<button class="btn btn-default" ng-click="window.history.back();" type="submit"
 							><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
 						<button ng-if="table.can_insert" class="btn btn-default" ng-click="addNewClick();"
 							><i class="glyphicon glyphicon-plus"></i> Add new</button>
 					</div>
 				</form>
 			</div>
-			<div class="col-sm-3">
+			<div class="col-sm-3 hidden-xs">
 				<form class="form-horizontal" role="form">
 					<div class="form-group has-feedback">
 						<label class="sr-only" for="search">Search for rows</label>
@@ -32,7 +32,10 @@
 					</div>
 				</form>
 			</div>
+
+			<div class="hidden-xs">
 			<br /><br /><br />
+			</div>
 
 			<table class="table table-hover">
 			<thead>
@@ -48,15 +51,16 @@
 			</table>
 
 
-			<br />
 			<form class="form-horizontal" role="form">
 				<div class="form-group">
+					<br />
 					<div class="col-sm-12">
-					<button class="btn btn-default" type="submit" onclick="window.history.back();"
+					<button class="btn btn-default" type="submit" ng-click="window.history.back();"
 						><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
 					<button ng-if="table.can_insert" class="btn btn-default" ng-click="addNewClick();"
 						><i class="glyphicon glyphicon-plus"></i> Add new</button>
 					</div>
+					<br /><br />
 				</div>
 			</form>
 

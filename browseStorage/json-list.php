@@ -91,6 +91,13 @@
  */
 
 
+// Base classes and utilities
+require_once( 'json-common.php' );
+
+use browseStorage\TableClass;
+use browseStorage\RawSQL;
+
+
 // ============================================================================
 // ####  Error handling  ######################################################
 // ============================================================================
@@ -121,12 +128,20 @@ try	{
 
 
 // ============================================================================
-// ####  Require  #############################################################
+// ####  Load configuration  ##################################################
 // ============================================================================
 
-	// Initial code requirements
-	require_once( 'json-common.php' );
-	require_once( 'config.php' );
+
+	/**
+	 * Initializing function. Allows the developer to create any local
+	 * variables in `config.php` without "polluting" the global namespace.
+	 */
+	function browseStorage_init()
+	{
+		require_once( 'config.php' );
+	}
+
+	browseStorage_init();
 
 
 // ============================================================================

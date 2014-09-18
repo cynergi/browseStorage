@@ -17,6 +17,9 @@
  * two global arrays with values. Adding code that has side effects is a
  * security issue if the file is called directly by a browser.
  *
+ * Currently, to avoid global namespace pullution, this file will be included
+ * inside a PHP function. This may cause restrictions and may be rethought at
+ * a later date, so please heed to the above warning!
  *
  * Security warning:
  * These scripts do not validate user permission to use them, or ensure data
@@ -48,7 +51,11 @@
  *	(e.g.: code readability) on a case-by-case basis.
  */
 
+
 require_once( 'json-common.php' );
+
+use browseStorage\TableClass;
+use browseStorage\RawSQL;
 
 
 // ============================================================================
@@ -56,17 +63,10 @@ require_once( 'json-common.php' );
 // ============================================================================
 
 
-/*
-// it is up to you to sepcify different string depedning on what languages you
-// wish to support
-// it is up to you to ensure all strings are in UTF-8 as they will be
-// passed unchanged to PHP's `json_encode()`.
-*/
-
-$browseStorage_group1 = "My table group 1";
+$my_group1 = "My table group 1";
 
 
-\browseStorage\TableClass::$data_sources = array(
+TableClass::$data_sources = array(
 
 	'mysql_demos' =>
 	array(
@@ -92,18 +92,20 @@ $browseStorage_group1 = "My table group 1";
 
 /**
  * Table keys should *not* contain:
- * * Forward slashes ('/') (confuses AngularJS router arguments, even though this is not used at this time)
- * * Pipes ('|') (confuses automatically generated keys when table=*)
- * * Newlines ('\n') or carriage returns ('\r') (may confuse their usage in HTML/HTTP)
+ * * Forward slashes ('/') -- confuses AngularJS router arguments, even
+ *   though this is not used at this time
+ * * Pipes ('|') -- confuses automatically generated keys when table=*
+ * * Newlines ('\n') or carriage returns ('\r') -- may confuse their
+ *   usage in HTML/HTTP
  */
-\browseStorage\TableClass::$data_tables = array(
+TableClass::$data_tables = array(
 
 	'users' =>
 	array(
 		'source'     => 'sqlite_demos',
 		'table'      => "users", // '*' means all tables whose names consist of only letters, numbers and underscore
 	//	'name'       => "List of users",
-		'group'      => $browseStorage_group1,
+		'group'      => $my_group1,
 		'icon'       => "img/users.jpg",
 		'col_id'     => 'UserID',
 		'col_list'   => array(	array( 'LogInName', 'Name' ),  // Columns to list
@@ -113,9 +115,9 @@ $browseStorage_group1 = "My table group 1";
 	//	'col_names'  => array(	'Column1' => array("Text", "text"),
 	//				'Column2' => array("Text", "text"),
 	//	),
-		'editable'   => \browseStorage\TableClass::EDITABLE_IMMEDIATELY |
-		                \browseStorage\TableClass::CAN_INSERT |
-		                \browseStorage\TableClass::CAN_DELETE
+		'editable'   => TableClass::EDITABLE_IMMEDIATELY |
+				TableClass::CAN_INSERT |
+				TableClass::CAN_DELETE
 	),
 
 	'accounts' =>
@@ -123,7 +125,7 @@ $browseStorage_group1 = "My table group 1";
 		'source'     => 'sqlite_demos',
 		'table'      => "accounts",
 	//	'name'       => "List of accounts",
-		'group'      => $browseStorage_group1,
+		'group'      => $my_group1,
 		'icon'       => "img/accounts.jpg",
 		'col_id'     => 'AccountID',
 		'col_list'   => array(	array( 'Name' ),  // Columns to list
@@ -134,7 +136,7 @@ $browseStorage_group1 = "My table group 1";
 					'Name' => array("Name", "text", "Name of account. Describe what we're doing for the customer."),
 			// 4th item would be array of options
 		),
-		'editable'   => \browseStorage\TableClass::EDITABLE_ON_REQUEST,
+		'editable'   => TableClass::EDITABLE_ON_REQUEST,
 
 		'filter_list_before'  => 'browseStorage_filter_list_before',
 		'filter_list_after'   => 'browseStorage_filter_list_after',
@@ -145,10 +147,11 @@ $browseStorage_group1 = "My table group 1";
 	),
 );
 
+
 // Reset the demo database every hour, on the hour (can be removed in production)
 // ============================================================================
 
-$browseStorage_demo = @\browseStorage\TableClass::$data_sources['sqlite_demos']['file'];
+$browseStorage_demo = @TableClass::$data_sources['sqlite_demos']['file'];
 if( is_string($browseStorage_demo) )
 	{
 	$browseStorage_demo_dir  = dirname ($browseStorage_demo) . PATH_SEPARATOR;
@@ -183,7 +186,7 @@ if( is_string($browseStorage_demo) )
  * @param  $table_key string
  *         Table key.
  * @param  $tab_obj
- *         A `\browseStorage\TableClass` object already open for the specified
+ *         A `browseStorage\TableClass` object already open for the specified
  *         `$table_key`.
  * @param  $do_count bool
  *         True if caller requested a count of all listable rows on this table.
@@ -207,9 +210,9 @@ if( is_string($browseStorage_demo) )
  *         empty array.
  *
  * @return int|string
- *         Returns `\browseStorage\TableClass::FILTER_REQ_CALLER_PROCEEDS`
+ *         Returns `browseStorage\TableClass::FILTER_REQ_CALLER_PROCEEDS`
  *         if the caller should complete the data update, or returns
- *         `\browseStorage\TableClass::FILTER_REQ_CALLER_RETURNS` if the caller
+ *         `browseStorage\TableClass::FILTER_REQ_CALLER_RETURNS` if the caller
  *         should return the modified `$json` array to the HTTP caller.
  *         Note that in this latter case, your "filter after" will still be
  *         called (if it exists).
@@ -222,7 +225,7 @@ if( is_string($browseStorage_demo) )
  */
 function browseStorage_filter_list_before( $table_key, &$tab_obj, &$do_count, &$req_row_start, &$req_row_limit, &$req_col_values, &$req_search, &$json )
 {
-	return \browseStorage\TableClass::FILTER_REQ_CALLER_PROCEEDS;
+	return TableClass::FILTER_REQ_CALLER_PROCEEDS;
 }
 
 
@@ -232,13 +235,13 @@ function browseStorage_filter_list_before( $table_key, &$tab_obj, &$do_count, &$
  *
  * If your storage is a PDO-supported database, you can get the last insert ID
  * by calling:
- *	`if( $tab_obj->src_type == \browseStorage\TableClass::TYPE_PDO )`
+ *	`if( $tab_obj->src_type == browseStorage\TableClass::TYPE_PDO )`
  *		`$id = $tab_obj->src->lastInsertId(`...`)`
  *
  * @param  $table_key string
  *         Table key.
  * @param  $tab_obj
- *         A `\browseStorage\TableClass` object already open for the specified
+ *         A `browseStorage\TableClass` object already open for the specified
  *         `$table_key`.
  * @param  $do_count bool
  *         True if caller requested a count of all listable rows on this table.
@@ -275,7 +278,7 @@ function browseStorage_filter_list_after( $table_key, &$tab_obj, $do_count, $req
  * @param  $table_key string
  *         Table key.
  * @param  $tab_obj
- *         A `\browseStorage\TableClass` object already open for the specified
+ *         A `browseStorage\TableClass` object already open for the specified
  *         `$table_key`.
  * @param  $req_ids string[]
  *         Associative array of strings. Keys are column identifiers and values
@@ -294,9 +297,9 @@ function browseStorage_filter_list_after( $table_key, &$tab_obj, $do_count, $req
  *         hold an incorrect (`0`) value at this time.
  *
  * @return int
- *         Returns `\browseStorage\TableClass::FILTER_REQ_CALLER_PROCEEDS`
+ *         Returns `browseStorage\TableClass::FILTER_REQ_CALLER_PROCEEDS`
  *         if the caller should complete the data retrieval, or returns
- *         `\browseStorage\TableClass::FILTER_REQ_CALLER_RETURNS` if the caller
+ *         `browseStorage\TableClass::FILTER_REQ_CALLER_RETURNS` if the caller
  *         should return the modified `$json` array to the HTTP caller.
  *         Note that in this latter case, your "filter after" will still be
  *         called (if it exists).
@@ -306,7 +309,7 @@ function browseStorage_filter_list_after( $table_key, &$tab_obj, $do_count, $req
  */
 function browseStorage_filter_read_before( $table_key, &$tab_obj, &$req_ids, &$json )
 {
-	return \browseStorage\TableClass::FILTER_REQ_CALLER_PROCEEDS;
+	return TableClass::FILTER_REQ_CALLER_PROCEEDS;
 }
 
 
@@ -316,7 +319,7 @@ function browseStorage_filter_read_before( $table_key, &$tab_obj, &$req_ids, &$j
  * @param  $table_key string
  *         Table key.
  * @param  $tab_obj
- *         A `\browseStorage\TableClass` object already open for the specified
+ *         A `browseStorage\TableClass` object already open for the specified
  *         `$table_key`.
  * @param  $req_ids string[]
  *         Associative array of strings. Keys are column identifiers and values
@@ -351,7 +354,7 @@ function browseStorage_filter_read_after( $table_key, &$tab_obj, $req_ids, &$jso
  * @param  $table_key string
  *         Table key.
  * @param  $tab_obj
- *         A `\browseStorage\TableClass` object already open for the specified
+ *         A `browseStorage\TableClass` object already open for the specified
  *         `$table_key`.
  * @param  $action string
  *         The action the HTTP caller requested, validated and abbreviated into
@@ -370,9 +373,9 @@ function browseStorage_filter_read_after( $table_key, &$tab_obj, $req_ids, &$jso
  *         specified record.
  *         This filter function can change this array (like many others), but
  *         with one added functionality. Column values can be set to objects of
- *         class `\browseStorage\RawSQL`. These will not be escaped when
- *         creating the SQL string, allowing you to create NULL values, computed
- *         dates, sub-queries and so on.
+ *         class `browseStorage\RawSQL` (imported as just `RawSQL`).
+ *         These will not be escaped when creating the SQL string, allowing you
+ *         to create NULL values, computed dates, sub-queries and so on.
  * @param  $json array
  *         A pre-prepared JSON associative array that will be returned to the
  *         HTTP caller. All values are set except for the column values.
@@ -383,9 +386,9 @@ function browseStorage_filter_read_after( $table_key, &$tab_obj, $req_ids, &$jso
  *         hold an incorrect (`0`) value at this time.
  *
  * @return int
- *         Returns `\browseStorage\TableClass::FILTER_REQ_CALLER_PROCEEDS`
+ *         Returns `browseStorage\TableClass::FILTER_REQ_CALLER_PROCEEDS`
  *         if the caller should complete the data update, or returns
- *         `\browseStorage\TableClass::FILTER_REQ_CALLER_RETURNS` if the caller
+ *         `browseStorage\TableClass::FILTER_REQ_CALLER_RETURNS` if the caller
  *         should return the modified `$json` array to the HTTP caller.
  *         Note that in this latter case, your "filter after" will still be
  *         called (if it exists).
@@ -396,7 +399,7 @@ function browseStorage_filter_read_after( $table_key, &$tab_obj, $req_ids, &$jso
  */
 function browseStorage_filter_write_before( $table_key, &$tab_obj, $action, &$req_ids, &$req_col_values, &$json )
 {
-	return \browseStorage\TableClass::FILTER_REQ_CALLER_PROCEEDS;
+	return TableClass::FILTER_REQ_CALLER_PROCEEDS;
 }
 
 
@@ -412,13 +415,13 @@ function browseStorage_filter_write_before( $table_key, &$tab_obj, $action, &$re
  *
  * If your storage is a PDO-supported database, you can get the last insert ID
  * by calling:
- *	`if( $tab_obj->src_type == \browseStorage\TableClass::TYPE_PDO )`
+ *	`if( $tab_obj->src_type == browseStorage\TableClass::TYPE_PDO )`
  *		`$id = $tab_obj->src->lastInsertId(`...`)`
  *
  * @param  $table_key string
  *         Table key.
  * @param  $tab_obj
- *         A `\browseStorage\TableClass` object already open for the specified
+ *         A `browseStorage\TableClass` object already open for the specified
  *         `$table_key`.
  * @param  $action string
  *         The action the HTTP caller requested, validated and abbreviated into

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" xmlns="http://www.w3.org/1999/html">
 <div class="row">
 	<div class="col-md-12">
 
@@ -9,7 +9,9 @@
 				<h1><small>{{add_new ? 'New' : 'Editing'}}</small> {{row.columns[row.col_name].value}}</h1>
 			</div>
 
+			<div class="hidden-xs">
 			<br />
+			</div>
 
 
 			<form name="input_form" class="form-horizontal" role="form" ng-submit="saveClick($event);">
@@ -112,16 +114,17 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<br /><br />
+					<br />
 					<div class="col-sm-12">
 					<!-- the first button is actually an anchor so that it doesn't become the default for the "Enter" key! -->
-					<a class="btn btn-default" onclick="window.history.back();"
+					<a class="btn btn-default" ng-click="window.history.back();"
 						><i class="glyphicon glyphicon-chevron-left"></i> Cancel/Back</a>
-					<button class="btn btn-default" type="submit" ng-disabled="input_form.$pristine"
-						><i class="glyphicon glyphicon-save"></i> Save</button>
-					<button ng-if="!add_new  &&  row.can_delete" class="btn btn-default" ng-click="deleteClick($event);"
-						><i class="glyphicon glyphicon-remove"></i> Delete</button>
+					<nobr><button class="btn btn-default" type="submit" ng-disabled="input_form.$pristine"
+						><i class="glyphicon glyphicon-save"></i> Save</button
+					>&nbsp;<button ng-if="!add_new  &&  row.can_delete" class="btn btn-default" ng-click="deleteClick($event);"
+						><i class="glyphicon glyphicon-remove"></i> Delete</button></nobr>
 					</div>
+					<br /><br />
 				</div>
 			</form>
 

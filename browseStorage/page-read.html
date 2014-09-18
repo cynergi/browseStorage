@@ -9,7 +9,9 @@
 				<h1><small>Showing</small> {{row.columns[row.col_name].value}}</h1>
 			</div>
 
+			<div class="hidden-xs">
 			<br />
+			</div>
 
 
 			<form class="form-horizontal" role="form">
@@ -22,15 +24,16 @@
 					<p ng-if="col.show == 'other'"  class="col-sm-9 form-control-static">{{col.value}}</p>
 				</div>
 				<div class="form-group">
-					<br /><br />
+					<br />
 					<div class="col-sm-12">
-					<button class="btn btn-default" type="submit" onclick="window.history.back();"
+					<button class="btn btn-default" type="submit" ng-click="window.history.back();"
 						><i class="glyphicon glyphicon-chevron-left"></i> Back</button>
 					<button ng-if="row.can_edit > 0" class="btn btn-default" ng-click="editClick();"
 						><i class="glyphicon glyphicon-pencil"></i> Edit</button>
 					<button ng-if="row.can_delete" class="btn btn-default" ng-click="deleteClick($event);"
 						><i class="glyphicon glyphicon-remove"></i> Delete</button>
 					</div>
+					<br /><br />
 				</div>
 			</form>
 

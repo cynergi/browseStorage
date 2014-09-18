@@ -12,19 +12,6 @@ browseStorage.app = angular.module( 'browseStorageApp', ['ngTouch', 'ngRoute', '
 
 
 /**
- * Disable debug information (while in production).
- */
-/*!!! not working; using unminified angular because of this
-browseStorage.app.config(
-[        '$compileProvider',
-function( $compileProvider )
-{
-	$compileProvider.debugInfoEnabled( false );
-}]);
-*/
-
-
-/**
  * Report an error using an AngularJS' UI Bootstrap modal.
  *
  * @param $modal Object
@@ -223,13 +210,15 @@ function( $scope )
 
 
 /**
- * Table List controller.
+ * Navbar (with Table List) controller.
  */
-browseStorage.app.controller( 'TableListCtrl',
+browseStorage.app.controller( 'NavbarTableListCtrl',
 [        '$scope', '$http', '$modal',
 function( $scope,   $http,   $modal )
 {
 	$scope.json = {};
+	$scope.window = window;
+	$scope.isCollapsed = true;
 	$scope.search = "";  // Set and used as search filter in `page-list.html`
 
 	$http.get( 'browseStorage/json-tables.php?nogroups&'+browseStorage.initial_search.substring(1) ).
@@ -255,6 +244,7 @@ function( $scope,   $routeParams,   $http,   $location,   $modal )
 		};
 
 	$scope.table = {};
+	$scope.window = window;
 
 	$scope.listClick = function( event ) {
 		$location.url( ($scope.table.can_edit>=2 || ($scope.table.can_edit==1 && (event.altKey || event.shiftKey)) ? '/write/':'/read/') + params.table_key + '?' + event.target.parentElement.id.substring(4) );
@@ -287,6 +277,7 @@ function( $scope,   $routeParams,   $http,   $location,   $modal,   $q )
 		};
 
 	$scope.row = {};
+	$scope.window = window;
 
 	// Add `id0`, `id1`, `id2`, etc. parameters
 	var id_num = 0;
