@@ -19,6 +19,7 @@ Dependencies (included via CDN):
 * AngularJS
 * UI Bootstrap
 * Twitter Bootstrap CSS
+
 No jQuery dependency.
 
 
