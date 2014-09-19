@@ -273,6 +273,7 @@ if( is_string($browseStorage_demo) )
 		touch ( $browseStorage_demo_original );
 		// "atomic" duplication:
 		copy  ( $browseStorage_demo_original, $browseStorage_demo_copy );
+		chmod ( $browseStorage_demo_copy,     0666                     );
 		rename( $browseStorage_demo_copy,     $browseStorage_demo      );
 		}
 	}
