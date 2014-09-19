@@ -251,8 +251,8 @@ class TableClass
 		else
 			$t = false;
 
-		$this->error_sprintf  = 'Misconfiguration in browseStorage/config.php: %s '.__CLASS__.'::$data_table['.var_export($table_key,true).'], when calling ' . basename($_SERVER['PHP_SELF']) . '.';
-		$this->error_script = basename( $_SERVER['PHP_SELF'] );
+		$this->error_script  = basename( $_SERVER['PHP_SELF'] );
+		$this->error_sprintf = 'Misconfiguration in browseStorage/config.php: %s '.__CLASS__.'::$data_table['.var_export($table_key,true).'], when calling ' . $this->error_script . '.';
 
 		if( !is_array(self::$data_tables)  ||  !is_array(@self::$data_tables[$table_key]) )
 			throw new \Exception( 'Constructor for class '.__CLASS__.' called with non-existing data table '.__CLASS__.'::$data_tables['.var_export($table_key,true).'].' );
@@ -460,11 +460,14 @@ class TableClass
 		while( isset($_POST["col$col_num"]) )
 			{
 			$col = strval( $_POST["col$col_num"] );
+			/* Safari 7.1 auto-complete seems to have a bad interaction with Angular, and no value is set
+			   see: https://github.com/angular/angular.js/issues/1460
 			if( !isset($_POST["col${col_num}_value"]) )
 				throw new \Exception( "Missing \$_POST['col${col_num}_value'] for corresponding \$_POST['col${col_num}'] when calling $this->error_script." );
+			*/
 			if( isset($req_col_values[$col]) )
 				throw new \Exception( "\$_POST['col${col_num}'] indicates a repeated column name when calling $this->error_script." );
-			$req_col_values[$col] = $_POST["col${col_num}_value"];
+			$req_col_values[$col] = strval( @$_POST["col${col_num}_value"] );
 			$col_num++;
 			}
 		return $req_col_values;
@@ -483,7 +486,7 @@ class TableClass
 	 *         are column values. These can come from `$req_ids` or `$req_col_values`.
 	 * @return string
 	 *         Returns a string with the SQL WHERE clause, including
-	 *         "`WHERE`" (with leading space).
+	 *         "`WHERE`" (without leading space).
 	 *
 	 * @throws \Exception
 	 *         On detected configuration errors, or PDO errors not thrown.
@@ -500,7 +503,7 @@ class TableClass
 				// but the "before" filter may have changed this
 			}
 		if( strlen($where) > 0 )
-			$where = " WHERE $where";
+			$where = "WHERE $where";
 		return $where;
 	}
 }

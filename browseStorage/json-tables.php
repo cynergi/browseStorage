@@ -173,6 +173,8 @@ try	{
 
 	foreach( TableClass::$data_tables as $table_key => $tab )
 		{
+		if( isset($tab['unlisted']) )
+			continue;
 		$group_name = strval( @$tab['group'] );
 		if( !$nogroups )
 			{

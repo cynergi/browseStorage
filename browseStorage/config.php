@@ -63,9 +63,6 @@ use browseStorage\RawSQL;
 // ============================================================================
 
 
-$my_group1 = "My table group 1";
-
-
 TableClass::$data_sources = array(
 
 	'mysql_demos' =>
@@ -90,6 +87,12 @@ TableClass::$data_sources = array(
 // ============================================================================
 
 
+$select_client   = "SELECT ClientID,   Name    FROM Clients    ORDER BY Name    ASC";
+$select_trip     = "SELECT TripID,     Title   FROM Trips      ORDER BY Title   ASC";
+$select_country  = "SELECT CountryID,  Name    FROM Countries  ORDER BY Name    ASC";
+$select_currency = "SELECT CurrencyID, NameISO FROM Currencies ORDER BY NameISO ASC";
+
+
 /**
  * Table keys should *not* contain:
  * * Forward slashes ('/') -- confuses AngularJS router arguments, even
@@ -100,50 +103,151 @@ TableClass::$data_sources = array(
  */
 TableClass::$data_tables = array(
 
-	'users' =>
+	'clients' => // -------------------------------------------------------
 	array(
 		'source'     => 'sqlite_demos',
-		'table'      => "users", // '*' means all tables whose names consist of only letters, numbers and underscore
-	//	'name'       => "List of users",
-		'group'      => $my_group1,
-		'icon'       => "img/users.jpg",
-		'col_id'     => 'UserID',
-		'col_list'   => array(	array( 'LogInName', 'Name' ),  // Columns to list
-					array( 'Name' ),               // Order By
-		),
+		'table'      => "Clients",
+		'name'       => "Customers",
+		'col_id'     => 'ClientID',
+		'col_list'   => array(	array( 'Name', 'ContactPhone', 'ContactEmail' ),  // Columns to list
+					array( 'Name' ),  // Order By
+		                ),
 		'col_name'   => 'Name',
-	//	'col_names'  => array(	'Column1' => array("Text", "text"),
-	//				'Column2' => array("Text", "text"),
-	//	),
-		'editable'   => TableClass::EDITABLE_IMMEDIATELY |
-				TableClass::CAN_INSERT |
-				TableClass::CAN_DELETE
+		'col_names'  => array(	'Name'             => array( "Name",               "text"     ),
+					'Address'          => array( "Street address",     "textaddr" ),
+					'CountryID'        => array( "Country",            "select", '', $select_country ),
+					'TaxNumber'        => array( "Tax number",         "text"     ),
+					'ContactPhone'     => array( "Telephone",          "tel"      ),
+					'ContactEmail'     => array( "E-mail",             "email"    ),
+					'PreferCurrencyID' => array( "Preferred currency", "select", '', $select_currency ),
+		                ),
+		'editable'   => TableClass::EDITABLE_ON_REQUEST |
+				TableClass::CAN_INSERT,
+		'buttons'    => array(
+					array( 'Purchases', 'list:sales', 'Purchases made by this client', array('ClientID','ClientID') )
+		                ),
 	),
 
-	'accounts' =>
+	'client-sales' => // --------------------------------------------------
+	array(
+		'unlisted'   => true,
+		'source'     => 'sqlite_demos',
+		'table'      => "Clients",
+		'name'       => "Customers",
+		'col_id'     => 'ClientID',
+		'col_list'   => array(	array( 'Name', 'ContactPhone', 'ContactEmail' ),  // Columns to list
+					array( 'Name' ),  // Order By
+		                ),
+		'col_name'   => 'Name',
+		'col_names'  => array(	'Name'             => array( "Name",               "text"     ),
+					'Address'          => array( "Street address",     "textaddr" ),
+					'CountryID'        => array( "Country",            "select", '', $select_country ),
+					'TaxNumber'        => array( "Tax number",         "text"     ),
+					'ContactPhone'     => array( "Telephone",          "tel"      ),
+					'ContactEmail'     => array( "E-mail",             "email"    ),
+					'PreferCurrencyID' => array( "Preferred currency", "select", '', $select_currency ),
+		                ),
+		'editable'   => TableClass::EDITABLE_ON_REQUEST |
+				TableClass::CAN_INSERT,
+		'buttons'    => array(
+					array( 'Purchases', 'list:sales', 'Purchases made by this client', array('ClientID','ClientID') )
+		                ),
+		'filter_list_before' => 'filter_clientsales_list_before',
+	),
+
+	'sales' => // ---------------------------------------------------------
 	array(
 		'source'     => 'sqlite_demos',
-		'table'      => "accounts",
-	//	'name'       => "List of accounts",
-		'group'      => $my_group1,
-		'icon'       => "img/accounts.jpg",
-		'col_id'     => 'AccountID',
+		'table'      => "Sales",
+	//	'name'       => "Sales",  // Easily guessed as title-cased version of table identifier
+		'col_id'     => 'SaleID',
+		'col_list'   => array(	array( 'ClientName', 'TripCountryName', 'OnDate' ),  // Columns to list (will need a filter)
+					array( '-OnDate' ),  // Order By
+		                ),
+		'col_name'   => 'OnDate',
+		'col_names'  => array(	'ClientID'        => array( "Customer",         "select", '', $select_client ),
+					'TripID'          => array( "Trip package",     "select", '', $select_trip ),
+					'OnDate'          => array( "Date travelled",   "date"   ),
+					'Description'     => array( "Special requests", "textarea", "Describe any special needs of the customer/trip." ),
+					'Price'           => array( "Price to bill",    "number" ),
+					'PriceCurrencyID' => array( "Price currency",   "select", '', $select_currency ),
+		                ),
+		'editable'   => TableClass::EDITABLE_ON_REQUEST |
+				TableClass::CAN_INSERT          |
+				TableClass::CAN_DELETE,
+		'filter_list_before' => 'filter_sales_list_before',
+		'buttons'    => array(
+					array( 'Customer',     'read:clients', 'Show this customer',     'ClientID' ),
+					array( 'Trip package', 'read:trips',   'Show this trip package', 'TripID'   ),
+		                ),
+	),
+
+	'trips' => // ---------------------------------------------------------
+	array(
+		'source'     => 'sqlite_demos',
+		'table'      => "Trips",
+		'name'       => "Trip Packages",
+		'col_id'     => 'TripID',
+		'col_list'   => array(	array( 'TripCountryName', 'Title',  'UntilDate' ),  // Columns to list (will need a filter)
+					array( 'TripCountryName', 'Title', '-UntilDate' ),  // Order By
+		                ),
+		'col_name'   => 'Title',
+		'col_names'  => array(	'Title'                => array( "Package title",   "text", "Title used to summarize this trip package in lists." ),
+					'DestinationCountryID' => array( "Trip to",         "select", '', $select_country ),
+					'Description'          => array( "Description",     "textarea", "Describe the points of interest visited, provide some history and background, and describe what services this trip package consists of." ),
+					'Price'                => array( "Price to bill",   "number" ),
+					'PriceCurrencyID'      => array( "Price currency",  "select", '', $select_currency ),
+					'UntilDate'            => array( "Available until", "date", "Date when this trip was/will be no longer available. Leave empty if not yet known." ),
+		                ),
+		'editable'   => TableClass::EDITABLE_ON_REQUEST |
+				TableClass::CAN_INSERT          |
+				TableClass::CAN_DELETE,
+		'filter_list_before' => 'filter_trips_list_before',
+	),
+
+	'countries' => // -----------------------------------------------------
+	array(
+		'source'     => 'sqlite_demos',
+		'table'      => "Countries",
+		'name'       => "Selectable Countries",
+		'col_id'     => 'CountryID',
 		'col_list'   => array(	array( 'Name' ),  // Columns to list
 					array( 'Name' ),  // Order By
-		),
-	//	'col_name'   => 'Name',
-		'col_names'  => array(	'AccountID' => array("Internal database ID", "label"),
-					'Name' => array("Name", "text", "Name of account. Describe what we're doing for the customer."),
-			// 4th item would be array of options
-		),
-		'editable'   => TableClass::EDITABLE_ON_REQUEST,
+		                ),
+	//	'col_name'   => 'Name',  // Easily guessed as the first in 'col_list'
+		'col_names'  => array( 'Name' => array( "Name", "text" ),
+		                ),
+		'editable'   => TableClass::EDITABLE_ON_REQUEST |
+				TableClass::CAN_INSERT          |
+				TableClass::CAN_DELETE,
+		'buttons'    => array(
+					array( 'Customers living in this country',   'list:clients',      'Customers living in this country',             array('CountryID','CountryID'           ) ),
+					array( 'Customers traveled to this country', 'list:client-sales', 'Customers that have traveled to this country', array('CountryID','TripCountryID'       ) ),
+					array( 'Trip packages to this country',      'list:trips',        'Available trips to this country',              array('CountryID','DestinationCountryID') ),
+		                ),
+	),
 
-		'filter_list_before'  => 'browseStorage_filter_list_before',
-		'filter_list_after'   => 'browseStorage_filter_list_after',
-		'filter_read_before'  => 'browseStorage_filter_read_before',
-		'filter_read_after'   => 'browseStorage_filter_read_after',
-		'filter_write_before' => 'browseStorage_filter_write_before',
-		'filter_write_after'  => 'browseStorage_filter_write_after',
+	'currencies' => // ----------------------------------------------------
+	array(
+		'source'     => 'sqlite_demos',
+		'table'      => "Currencies",
+		'name'       => "Selectable Currencies",
+		'col_id'     => 'CurrencyID',
+		'col_list'   => array(	array( 'NameISO', 'Name' ),  // Columns to list
+					array( 'NameISO' ),  // Order By
+		                ),
+	//	'col_name'   => 'Name',  // Easily guessed as the first in 'col_list'
+		'col_names'  => array( 'NameISO' => array( "3-letter 'ISO' name", "text" ),
+		                       'Name'    => array( "Full name",           "text" ),
+		                ),
+		'editable'   => TableClass::EDITABLE_ON_REQUEST |
+				TableClass::CAN_INSERT          |
+				TableClass::CAN_DELETE,
+		'buttons'    => array(
+					array( 'Customers paying in this currency', 'list:clients', 'Customers that prefer to pay in this currency', array('CurrencyID','PreferCurrencyID') ),
+					array( 'Sales in this currency',            'list:sales',   'Sales made in this currency',                   array('CurrencyID','PriceCurrencyID' ) ),
+					array( 'Trip packages in this currency',    'list:trips',   'Available trips in this currency',              array('CurrencyID','PriceCurrencyID' ) ),
+		                ),
 	),
 );
 
@@ -216,9 +320,16 @@ if( is_string($browseStorage_demo) )
  *         should return the modified `$json` array to the HTTP caller.
  *         Note that in this latter case, your "filter after" will still be
  *         called (if it exists).
- *         As a special case, this function can also return a string. If it
- *         begins as `"SELECT "` or `"WHERE "`, it will be used as the
- *         corresponding (part of) an SQL statement to fetch the list.
+ *         As a special case, this function can also return a string or
+ *         `browseStorage\RawSQL`object:
+ *         * If it begins with `"SELECT "`, it is taken as a full SQL query to
+ *           fetch the data. Note that everything between `SELECT` and `FROM`
+ *           is replaced by `COUNT(*)` if the caller requests a count: if this
+ *           is not suitable, you need to perform all code yourself.
+ *         * If it begins with `"FROM "`, it will be used as the `FROM`
+ *           part of the produced SQL statement. The string may include joins.
+ *         * If it begins with `"WHERE "`, it will be used as the `WHERE`
+ *           part of the produced SQL statement.
  *
  * @throws \Exception
  *         To report an error to the HTTP caller.
@@ -226,6 +337,21 @@ if( is_string($browseStorage_demo) )
 function browseStorage_filter_list_before( $table_key, &$tab_obj, &$do_count, &$req_row_start, &$req_row_limit, &$req_col_values, &$req_search, &$json )
 {
 	return TableClass::FILTER_REQ_CALLER_PROCEEDS;
+}
+
+function filter_clientsales_list_before( $table_key, &$tab_obj, &$do_count, &$req_row_start, &$req_row_limit, &$req_col_values, &$req_search, &$json )
+{
+	return "FROM ClientSales";
+}
+
+function filter_sales_list_before( $table_key, &$tab_obj, &$do_count, &$req_row_start, &$req_row_limit, &$req_col_values, &$req_search, &$json )
+{
+	return "FROM SalesList";
+}
+
+function filter_trips_list_before( $table_key, &$tab_obj, &$do_count, &$req_row_start, &$req_row_limit, &$req_col_values, &$req_search, &$json )
+{
+	return "FROM TripsList";
 }
 
 
@@ -303,6 +429,14 @@ function browseStorage_filter_list_after( $table_key, &$tab_obj, $do_count, $req
  *         should return the modified `$json` array to the HTTP caller.
  *         Note that in this latter case, your "filter after" will still be
  *         called (if it exists).
+ *         As a special case, this function can also return a string or
+ *         `browseStorage\RawSQL`object:
+ *         * If it begins with `"SELECT "`, it is taken as a full SQL query to
+ *           fetch the data.
+ *         * If it begins with `"FROM "`, it will be used as the `FROM`
+ *           part of the produced SQL statement. The string may include joins.
+ *         * If it begins with `"WHERE "`, it will be used as the `WHERE`
+ *           part of the produced SQL statement.
  *
  * @throws \Exception
  *         To report an error to the HTTP caller.

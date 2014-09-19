@@ -20,7 +20,7 @@
 			Little or no code writing is required.
 			</p>
 
-			<p><small>Version 0.2 (2014-09-18) (beta)</small></p>
+			<p><small>Version 0.3 (2014-09-19) (beta)</small></p>
 			<br />
 
 			<div class="alert alert-warning" role="alert">
@@ -79,6 +79,76 @@
 			Problem solved!
 			</p>
 
+			<h3>Demonstration (Demo Tables)</h3>
+
+			<p>
+			Say your client is a travel agency. This travel agency
+			specializes on 2-week packages where people travel to
+			a country and then travel within that country from city
+			to city visiting historic monuments, modern marvels and
+			exquisite cuisine.
+			</p>
+
+			<p>
+			This client has asked you to prepare a back-office
+			application that its employees could use from a desktop
+			computer, but also on the go, via tablets and
+			smartphones, to manage travel offerings, customers
+			and sales. The catch? Due to problems with the company
+			they previously hired to do this and who is 6 months
+			behind schedule, they need it done in 1 week or less!
+			</p>
+
+			<p>
+			With a confident smile you tell them you'll have it
+			ready the same day.
+			</p>
+
+			<p>
+			With information from them, you draw up the
+			following database model:
+			</p>
+
+			<p class="text-center">
+				<div style="max-width:574px; margin:0 auto">
+				<img src="index-model.png" alt="Database model" style="max-width:100%; height:auto" />
+				</div>
+			</p>
+
+			<p>
+			You export this to an SQLite file or MySQL database and
+			create the attached <code>browseStorage/config.php</code>.
+			The result? See for yourself in the "Demo Tables"
+			drop-down menu at the top of this page.
+			Please remember that because you are allowed to write
+			to the database, our demo resets itself every hour,
+			on the hour.
+			</p>
+
+			<h4>How we created the demo</h4>
+
+			<p>
+			Attached to these open source files, you'll find
+			<code>browseStorage/browseStorage-demos/demos.mwb</code>.
+			This is where we created the model for this database
+			(and the above graphic) using
+			<a href="http://dev.mysql.com/downloads/workbench/">MySQL Workbench</a>
+			v6.1.7. We then used Thomas Henlich and Tony
+			Beltramelli's
+			<a href="https://github.com/tonybeltramelli/ExportSQLite/blob/master/ExportSQLite.grt.lua">ExportSQLite</a>
+			script (version of Aug 5, 2013) to export this into
+			SQLite. On the latest versions of MySQL Workbench, this
+			script fails to export the <code>INSERT</code> SQL code,
+			so we had to comment-out that part of the script.
+			The generated file is
+			<code>browseStorage/browseStorage-demos/demos.sql</code>.
+			We ran that on an SQLite front-end (namely, Menial's
+			<a href="http://menial.co.uk/base/">Base</a> v2.4.8).
+			We manually ran the view creation SQL commands as
+			ExportSQLite did not do that on its own.
+			Data was filled-in with browseStorage itself.
+			</ul>
+			</p>
 
 			<h3>Features</h3>
 
@@ -100,7 +170,7 @@
 			<p>
 			browseStorage furthermore, features:
 			<ul>
-			<li>Mobile device compatibility.</li>
+			<li>Responsive design (mobile device compatibility).</li>
 			<li>Easy integration with external services, by
 			    supporting custom filters before and after data is
 			    read and written.</li>
@@ -344,7 +414,7 @@ CREATE TABLE pet (
 
 			<p>
 			Sources are set in the static associative array
-			<code>\browseStorage\TableClass::$data_sources</code>.
+			<code>browseStorage\TableClass::$data_sources</code>.
 			Each item of that array is a different source.
 			The item's key is the identifier that will allow
 			us to refer to that source later on.
@@ -436,7 +506,7 @@ CREATE TABLE pet (
 
 			<p>
 			Tables are set in the static associative array
-			<code>\browseStorage\TableClass::$data_tables</code>.
+			<code>browseStorage\TableClass::$data_tables</code>.
 			Each item of that array is a different table.
 			The item's key is the identifier that will allow
 			us to refer to that table later on.
@@ -458,11 +528,20 @@ CREATE TABLE pet (
 			</thead>
 			<tbody>
 			<tr>
+				<td valign="top"><code>unlisted</code></td>
+				<td valign="top">
+					If present, this table will not be
+					shown in the list of tables, allowing it
+					to be used only as a destination for
+					a button.
+				</td>
+			</tr>
+			<tr>
 				<td valign="top"><code>source</code></td>
 				<td valign="top">
 					This is the identifier of the source, one of the keys of
 					the sources array as explained above, and specified in
-					<code>\browseStorage\TableClass::$data_sources</code>.
+					<code>browseStorage\TableClass::$data_sources</code>.
 				</td>
 			</tr>
 			<tr>
@@ -474,6 +553,9 @@ CREATE TABLE pet (
 					This string will <i>not</i> be modified when inserting it
 					into a SQL statement. You should be very careful not to
 					assign this value from an external source without verification!
+					<!--
+					TODO: Not yet implemented: '*' on 'table' means all tables whose names consist of only letters, numbers and underscore
+					-->
 				</td>
 			</tr>
 			<tr>
@@ -566,6 +648,28 @@ CREATE TABLE pet (
 					</ol>
 					</p>
 					<p>
+					<b>As a special feature</b>, the fourth
+					item (<code>[3]</code>) can be a
+					string (or a
+					<code>browseStorage\RawSQL</code>
+					object). This will be interpreted as a
+					SQL statement, and must therefore start
+					with <code>"SELECT "</code>.
+					<!--
+					TODO: Uncomment this when we reactivate this feature
+					(now commented-out due to problems)
+					You can
+					have positional parameters (see
+					<a href="http://php.net/manual/en/pdostatement.execute.php">PHP's
+					PDO documentation</a>) with the names
+					of columns that exist on this table,
+					preceded by <code>':'</code>.
+					Positional parameters will not work
+					properly if you are allowed to add new
+					entries, so we advise against them.
+					-->
+					</p>
+					<p>
 					Example:
 					</p>
 <pre>
@@ -573,7 +677,10 @@ CREATE TABLE pet (
 //  'UsrID'  => array(),  // Commented-out = don't display
     'Name'   => array( "Name",     "text",     "Short name of user." ),
     'Email'  => array( "E-mail",   "email",    "E-mail address."     ),
-    'Addr'   => array( "Address",  "textarea", "Street address."     ),
+    'Addr'   => array( "Address",  "textaddr", "Street address."     ),
+    'CtryID' => array( "Country",  "select",   "Country.",
+                       "SELECT CtryID, Name FROM Countries ORDER BY Name"
+                ),
     'LangID' => array( "Language", "radio",    "Spoken language.",
                        array( 0 => "English",
                               1 => "French",
@@ -582,6 +689,50 @@ CREATE TABLE pet (
                 ),
 );
 </pre>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top"><code>buttons</code></td>
+				<td valign="top">
+					<p>
+					An array of buttons to show at the
+					bottom of an entry while showing/editing
+					it.
+					</p>
+					<p>
+					Each button is represented by another
+					array (numerically keyed starting at
+					0), where each item is:
+					<ol start="0">
+					<li>Button name as it will be
+					    displayed on screen</li>
+					<li>Button destination: can begin with
+					    <code>list:</code>,
+					    <code>read:</code> or
+					    <code>write:</code> to go to one of
+					    these pages. Anything else is taken
+					    as a literal destination URL that
+					    will be passed through
+					    <a href="http://php.net/manual/en/function.vsprintf.php">PHP's
+					    <code>vsprintf()</code></a> before
+					    being used. For the first 3 cases,
+					    after the <code>':'</code> comes the
+					    destination table key.</li>
+					<li>Help text, displayed as greyed text
+					    near the button.</li>
+					<li>Column 0 identifier that will be
+					    used as the first criteria for
+					    selecting an entry in the destination
+					    page. This can be an array instead of
+					    a string, in which case its first
+					    item is the mentioned column
+					    identifier and the second item is
+					    the corresponding column identifier
+					    in the destination table.</li>
+					</ol>
+					This last item can be repeated as often
+					as necessary.
+					</p>
 				</td>
 			</tr>
 			<tr>
@@ -597,9 +748,9 @@ CREATE TABLE pet (
 					constants that state what can be done
 					to <i>existing</i> rows of the table:
 					<ul>
-					<li><code>\browseStorage\TableClass::NOT_EDITABLE</code>.
+					<li><code>browseStorage\TableClass::NOT_EDITABLE</code>.
 					    Rows cannot be changed.</li>
-					<li><code>\browseStorage\TableClass::EDITABLE_ON_REQUEST</code>.
+					<li><code>browseStorage\TableClass::EDITABLE_ON_REQUEST</code>.
 					    Rows can be changed when the user
 					    explicitly presses an
 					    <kbd><i class="glyphicon glyphicon-pencil"></i> Edit</kbd>
@@ -607,7 +758,7 @@ CREATE TABLE pet (
 					    to skip this step by selecting the
 					    row with
 					    <kbd>alt + click</kbd>.</li>
-					<li><code>\browseStorage\TableClass::EDITABLE_IMMEDIATELY</code>.
+					<li><code>browseStorage\TableClass::EDITABLE_IMMEDIATELY</code>.
 					    Rows open in change mode/form
 					    immediately when chosen from a
 					    list.</li>
@@ -619,9 +770,9 @@ CREATE TABLE pet (
 					constants, with zero, one or both of
 					the following constants:
 					<ul>
-					<li><code>\browseStorage\TableClass::CAN_INSERT</code>.
+					<li><code>browseStorage\TableClass::CAN_INSERT</code>.
 					    The user can add new rows.</li>
-					<li><code>\browseStorage\TableClass::CAN_DELETE</code>.
+					<li><code>browseStorage\TableClass::CAN_DELETE</code>.
 					    The user can delete rows.</li>
 					</ul>
 					</p>
@@ -893,7 +1044,11 @@ CREATE TABLE pet (
 			    right-most on each row of a list, and displayed in
 			    a drop-down menu when reading an entry.
 			    Both read-only.</li>
-			<li>Configuration of common foreign key setups.</li>
+			<li>Change all SQL value escaping/quoting by prepared
+			    statements as these may have better insight on how
+			    to quote each parameter.</li>
+			<li>Fix prepared statements on select/radio column
+			    options.</li>
 			<li>Multi-language support.</li>
 			<li>Generate source code documentation with
 			    phpDocumentor</li>

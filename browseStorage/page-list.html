@@ -37,7 +37,7 @@
 			<br /><br /><br />
 			</div>
 
-			<table class="table table-hover">
+			<table class="table" ng-class="{'table-hover': table.rows.length > 0}">
 			<thead>
 				<tr>
 					<th ng-repeat="name in table.row_cols.names_list">{{name}}</th>
@@ -46,6 +46,9 @@
 			<tbody ng-click="listClick($event);">
 				<tr ng-repeat="row in table.rows | filter:search" id="row-{{row[0] | encode_uri_ids}}">
 					<td ng-repeat="value in row[1]">{{value}}</td>
+				</tr>
+				<tr ng-if="table.rows.length <= 0" class="text-muted" ng-click="listNoEntriesClick($event);">
+					<td colspan="{{table.row_cols.names_list.length}}">No entries.</td>
 				</tr>
 			</tbody>
 			</table>

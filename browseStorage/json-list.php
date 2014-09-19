@@ -26,7 +26,7 @@
  * * `"error":` Always `false` unless an error occurred (see bellow).
  * * `"name":` A string with the title shown while listing this table
  *   (usually the table name).
- * * `"can_edit":` An integer with one of the `\browseStorage\TableClass::*EDITABLE*`
+ * * `"can_edit":` An integer with one of the `browseStorage\TableClass::*EDITABLE*`
  *   properties for this table. It's 0 for not editable, 1 for editable on
  *   request and 2 for editable immediately.
  * * `"can_insert":` A boolean stating wether new records can be added/inserted.
@@ -195,8 +195,8 @@ try	{
 
 	$table_key = strval( @$_POST['table_key'] );
 
-	// New \browseStorage\TableClass object
-	$tab_obj = new \browseStorage\TableClass( $table_key );
+	// New browseStorage\TableClass object
+	$tab_obj = new TableClass( $table_key );
 	$tab =& $tab_obj->tab;  // shortcut
 
 	// Get configured table primary keys (IDs)
@@ -225,7 +225,7 @@ try	{
 		if( is_array($name) )
 			$name = @$name[0];
 		if( $name === NULL )
-			$name = \browseStorage\TableClass::ident_to_name( $col );
+			$name = TableClass::ident_to_name( $col );
 		$json_row_cols['names_list'][] = strval( $name );
 		}
 
@@ -233,13 +233,13 @@ try	{
 	$req_col_values = $tab_obj->req_col_values();
 
 	// Setup common `$json` properties
-	$json['name'] = ( isset($tab['name']) ? strval($tab['name']) : \browseStorage\TableClass::ident_to_name(@$tab['table']) );
+	$json['name'] = ( isset($tab['name']) ? strval($tab['name']) : TableClass::ident_to_name(@$tab['table']) );
 	$json['can_edit'] = intval(@$tab['editable']) & (
-		\browseStorage\TableClass::NOT_EDITABLE        |
-		\browseStorage\TableClass::EDITABLE_ON_REQUEST |
-		\browseStorage\TableClass::EDITABLE_IMMEDIATELY );
-	$json['can_insert'] = ( (intval(@$tab['editable']) & \browseStorage\TableClass::CAN_INSERT) != 0 );
-	$json['can_delete'] = ( (intval(@$tab['editable']) & \browseStorage\TableClass::CAN_DELETE) != 0 );
+		TableClass::NOT_EDITABLE        |
+		TableClass::EDITABLE_ON_REQUEST |
+		TableClass::EDITABLE_IMMEDIATELY );
+	$json['can_insert'] = ( (intval(@$tab['editable']) & TableClass::CAN_INSERT) != 0 );
+	$json['can_delete'] = ( (intval(@$tab['editable']) & TableClass::CAN_DELETE) != 0 );
 
 	// Rows, etc.
 	$req_do_count  = isset( $_POST['count'] );
@@ -262,22 +262,46 @@ try	{
 		if( !function_exists($fn) )
 			throw new Exception( "Missing before filter function '$fn()', when calling $tab_obj->error_script." );
 		$filter_ret = $fn( $table_key, $tab_obj, $req_do_count, $req_row_start, $req_row_limit, $req_col_values, $req_search, $json );
+		if( $filter_ret instanceof RawSQL )
+			$filter_ret = $filter_ret->sql;
 		}
 	else
-		$filter_ret = \browseStorage\TableClass::FILTER_REQ_CALLER_PROCEEDS;
+		$filter_ret = TableClass::FILTER_REQ_CALLER_PROCEEDS;
 
 	// Do our own data retrieval, unless the filter asks for skipping this
 	// ====================================================================
 
-	if( $filter_ret != \browseStorage\TableClass::FILTER_REQ_CALLER_RETURNS )
+	if( $filter_ret !== TableClass::FILTER_REQ_CALLER_RETURNS )
 		{
+		// Prepare SQL parts that are common to two operations
+		if( $tab_obj->src_type == TableClass::TYPE_PDO )
+			{
+			// prepare SQL FROM
+			if( is_string($filter_ret)  &&  !strncasecmp(ltrim($filter_ret), "FROM ", 5) )
+				$from = ltrim($filter_ret);
+			else
+				$from = "FROM " . $tab['table'];
+
+			// prepare SQL WHERE
+			if( is_string($filter_ret)  &&  !strncasecmp(ltrim($filter_ret), "WHERE ", 6) )
+				$where = ltrim( $filter_ret );
+			else
+				$where = $tab_obj->where_from_req( $req_col_values );
+			}
+
 		// Count all rows
 		if( $req_do_count )
 			{
 			switch( $tab_obj->src_type )
 				{
-				case \browseStorage\TableClass::TYPE_PDO:
-					$pdo_s = $tab_obj->src->query( "SELECT COUNT(*) FROM ".$tab['table'] );
+				case TableClass::TYPE_PDO:
+					// prepare SQL SELECT query
+					if( is_string($filter_ret)  &&  !strncasecmp($filter_ret, "SELECT ", 7) )
+						$select = "SELECT COUNT(*) " . stristr( $filter_ret, "FROM " );
+					else
+						$select = "SELECT COUNT(*) $from $where";
+
+					$pdo_s = $tab_obj->src->query( $select );
 					$c = $pdo_s->fetchAll( PDO::FETCH_COLUMN, 0 );
 					$json['count'] = intval( @$c[0] );
 					break;
@@ -289,18 +313,12 @@ try	{
 
 		switch( $tab_obj->src_type )
 			{
-			case \browseStorage\TableClass::TYPE_PDO:
+			case TableClass::TYPE_PDO:
 				if( is_string($filter_ret)  &&  !strncasecmp($filter_ret, "SELECT ", 7) )
 					$select = $filter_ret;
 				else
 					{
 					$columns = implode( ", ", array_unique(array_merge($config_ids, $config_list_cols), SORT_REGULAR) );
-
-					// prepare SQL WHERE
-					if( is_string($filter_ret)  &&  !strncasecmp(ltrim($filter_ret), "WHERE ", 6) )
-						$where = " " . ltrim($filter_ret);
-					else
-						$where = $tab_obj->where_from_req( $req_col_values );
 
 					// prepare SQL ORDER BY
 					$orderby = "";
@@ -313,10 +331,10 @@ try	{
 						$orderby .= $col;
 						}
 					if( strlen($orderby) > 0 )
-						$orderby = " ORDER BY $orderby";
+						$orderby = "ORDER BY $orderby";
 
 					// prepare SQL SELECT query
-					$select = "SELECT $columns FROM ".$tab['table'] . $where . $orderby;
+					$select = "SELECT $columns $from $where $orderby";
 					if( $req_row_limit !== false )
 						$select .= " LIMIT $req_row_limit";
 					if( $req_row_start !== false )

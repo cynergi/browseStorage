@@ -151,8 +151,8 @@ try	{
 
 	$table_key = strval( @$_POST['table_key'] );
 
-	// New \browseStorage\TableClass object
-	$tab_obj = new \browseStorage\TableClass( $table_key );
+	// New browseStorage\TableClass object
+	$tab_obj = new TableClass( $table_key );
 	$tab =& $tab_obj->tab;  // shortcut
 
 	// Get configured table primary keys (IDs)
@@ -173,7 +173,7 @@ try	{
 	// ====================================================================
 
 	// Read-only table security check
-	if( !isset($tab['editable'])  ||  $tab['editable'] <= \browseStorage\TableClass::NOT_EDITABLE )
+	if( !isset($tab['editable'])  ||  $tab['editable'] <= TableClass::NOT_EDITABLE )
 		throw new \Exception( sprintf($tab_obj->error_sprintf, "Data table set as not editable in") );
 
 	// Read-only column security check
@@ -209,7 +209,7 @@ try	{
 	// Start transaction
 	// ====================================================================
 
-	if( $tab_obj->src_type == \browseStorage\TableClass::TYPE_PDO )
+	if( $tab_obj->src_type == TableClass::TYPE_PDO )
 		$pdo_begin = $tab_obj->src->beginTransaction();
 
 	// Call "before" filter, if present
@@ -223,17 +223,17 @@ try	{
 		$filter_ret = $fn( $table_key, $tab_obj, $action, $req_ids, $req_col_values, $json );
 		}
 	else
-		$filter_ret = \browseStorage\TableClass::FILTER_REQ_CALLER_PROCEEDS;
+		$filter_ret = TableClass::FILTER_REQ_CALLER_PROCEEDS;
 
 	// Do our own data retrieval, unless the filter asks for skipping this
 	// ====================================================================
 
 	$affected_rows = false;
-	if( $filter_ret != \browseStorage\TableClass::FILTER_REQ_CALLER_RETURNS )
+	if( $filter_ret !== TableClass::FILTER_REQ_CALLER_RETURNS )
 		{
 		switch( $tab_obj->src_type )
 			{
-			case \browseStorage\TableClass::TYPE_PDO:
+			case TableClass::TYPE_PDO:
 
 				// prepare SQL WHERE
 				$where = $tab_obj->where_from_req( $req_ids );
@@ -245,26 +245,26 @@ try	{
 						$select = "";
 						foreach( $req_col_values as $col => $value )
 							{
-							if( $value instanceof \browseStorage\RawSQL )
+							if( $value instanceof RawSQL )
 								$select .= $value->sql . ", ";
 							else
 								$select .= $tab_obj->src->quote($value) . ", ";
 							}
-						$select = "INSERT INTO " . $tab['table'] . " (" . implode(", ", array_keys($req_col_values)) . ") VALUES (" . substr($select, 0, -2) . ")" . $where;
+						$select = "INSERT INTO $tab[table] (" . implode(", ", array_keys($req_col_values)) . ") VALUES (" . substr($select, 0, -2) . ") $where";
 						break;
 					case 'U':
 						$select = "";
 						foreach( $req_col_values as $col => $value )
 							{
-							if( $value instanceof \browseStorage\RawSQL )
+							if( $value instanceof RawSQL )
 								$select .= $col . "=" . $value->sql . ", ";
 							else
 								$select .= $col . "=" . $tab_obj->src->quote($value) . ", ";
 							}
-						$select = "UPDATE " . $tab['table'] . " SET " . substr($select, 0, -2) . $where;
+						$select = "UPDATE $tab[table] SET " . substr($select, 0, -2) . " $where";
 						break;
 					case 'D':
-						$select = "DELETE FROM " . $tab['table'] . $where;
+						$select = "DELETE FROM $tab[table] $where";
 						break;
 					// If due to an error, `$action` is something else, do nothing
 					}

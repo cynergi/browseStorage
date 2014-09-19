@@ -89,7 +89,11 @@ function()
 			case 'textarea':  // fall through
 			case 'text':      // fall through
 			case 'search':
+			case 'checkbox':
+			case 'radio':
 				return '';
+			case 'textaddr':
+				return 'Street address';
 			case 'datetime':  // fall through
 			case 'datetime-local':
 				return 'Date & time';
@@ -130,6 +134,8 @@ function ()
 				columns[key].show = "false";
 			else if( col.value === null  ||  col.value === undefined )
 				columns[key].show = "null";
+			else if( col.control == "textarea"  ||  col.control == "textaddr" )
+				columns[key].show = "textarea";
 			else
 				columns[key].show = "other";
 			}
@@ -246,8 +252,21 @@ function( $scope,   $routeParams,   $http,   $location,   $modal )
 	$scope.table = {};
 	$scope.window = window;
 
+	// Add `col0`, `col1`, `col2`, etc. parameters
+	var col_num = 0;
+	while( $routeParams['col'+col_num] !== undefined )
+		{
+		params['col'+col_num]          = $routeParams['col'+col_num         ];
+		params['col'+col_num+'_value'] = $routeParams['col'+col_num+'_value'];
+		col_num++;
+		}
+
 	$scope.listClick = function( event ) {
 		$location.url( ($scope.table.can_edit>=2 || ($scope.table.can_edit==1 && (event.altKey || event.shiftKey)) ? '/write/':'/read/') + params.table_key + '?' + event.target.parentElement.id.substring(4) );
+		};
+
+	$scope.listNoEntriesClick = function( event ) {
+		event.stopPropagation();
 		};
 
 	$scope.addNewClick = function() {
