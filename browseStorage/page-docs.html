@@ -63,7 +63,8 @@
 
 			<p>
 			You install browseStorage on a Web server with PHP
-			support. You edit a single file (<code>config.php</code>)
+			support. You edit a single file
+			(<code>browseStorage/config.php</code>)
 			where you change values in a couple of arrays, according
 			to instructions. These values specify what you want
 			browseStorage to provide. And what you want it to block.
@@ -1036,6 +1037,9 @@ CREATE TABLE pet (
 			Add support to:
 			<ul>
 			<li>Live searching on large tables.</li>
+			<li>Replace <code>select</code> controls by live
+			    searching controls if related tables are large
+			    (e.g.: &gt;20 rows)</li>
 			<li>Pagination on large tables.</li>
 			<li>Support for other storage engines such as
 			    INI files, CSV files, Berkeley DB files, Constant
