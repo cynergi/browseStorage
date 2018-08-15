@@ -8,6 +8,7 @@
 	<meta http-equiv="Content-Script-Type" content="text/javascript" />
 	<meta http-equiv="Content-Style-Type"  content="text/css" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta name="format-detection" content="telephone=no" />
 	<title>browseStorage</title>
 	<meta name="description" content="AngularJS- and UI Bootstrap-based generic data browser and editor" />
 	<meta name="Author" content="Pedro Freire" />
@@ -104,7 +105,7 @@
 </head>
 <body>
 <header class="navbar navbar-default navbar-fixed-top" role="navigation">
-	<div class="container" ng-controller="NavbarTableListCtrl">
+	<nav class="container" ng-controller="NavbarTableListCtrl">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" ng-click="isCollapsed = !isCollapsed">
 				<span class="sr-only">Toggle navigation</span>
@@ -128,7 +129,7 @@
 				</li>
 			</ul>
 		</div>
-	</div>
+	</nav>
 </header>
 <div class="header-placeholder"></div>
 <div role="main" ng-view></div
