@@ -14,7 +14,7 @@
 	<meta name="Author" content="Pedro Freire" />
 	<meta name="Copyright" content="Cynergi. Open Source. License to be determined." />
 
-	<script type="text/javascript" language="JavaScript"><!--
+	<script type="text/javascript" language="JavaScript">
 		/**
 		 * Global object.
 		 * Global namespace pollution is not critical as this file is
@@ -42,8 +42,8 @@
 			if( s_old )
 				s_old.parentNode.removeChild( s_old );
 		};
-	--></script>
-	<style id="temp-style" type="text/css"><!--
+	</script>
+	<style id="temp-style" type="text/css">
 		/* Basic Bootstrap to display something elegant while CSS isn't loaded or it fails to load */
 		html	{
 			font-family: sans-serif;
@@ -86,9 +86,9 @@
 				display: block !important;
 				}
 			}
-	--></style>
+	</style>
 	<link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" onload="browseStorage.delete_style();" />
-	<style type="text/css"><!--
+	<style type="text/css">
 		/* AngularJS's UI Bootstrap recomendation */
 		.nav, .pagination, .carousel, .panel-title a {
 			cursor: pointer;
@@ -101,7 +101,7 @@
 			width: 20%;
 			text-align: center;
 			}
-	--></style>
+	</style>
 </head>
 <body>
 <header class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -146,7 +146,7 @@
 		<button ng-if="!is_ok" class="btn btn-success" ng-click="cancelClick()">{{text.cancel}}</button>
 	</div>
 </script
-><script type="text/javascript" language="JavaScript"><!--
+><script type="text/javascript" language="JavaScript">
 	/**
 	 * Boolean that store whether the `browseStorage.onjserror()`
 	 * function has already been called, so that the error is
@@ -171,13 +171,13 @@
 				browseStorage.clear_body();
 			}
 	};
---></script
+</script
 ><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script
 ><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.min.js"></script
 ><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-touch.min.js"></script
 ><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="browseStorage/ui-bootstrap-tpls-0.11.0.min.js"></script
 ><script type="text/javascript" language="JavaScript" defer="defer" onerror="browseStorage.onjserror();" src="browseStorage/browseStorage.js"></script
-><script type="text/javascript" language="JavaScript"><!--
+><script type="text/javascript" language="JavaScript">
 	/**
 	 * Onerror function handler for external JS files.
 	 * Issues a standard JavaScript alert.
@@ -190,6 +190,6 @@
 
 	if( browseStorage.onjserror_ran )
 		browseStorage.clear_body();
---></script
+</script
 ></body>
 </html>
